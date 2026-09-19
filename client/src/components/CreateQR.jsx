@@ -200,17 +200,17 @@ const CreateQR = () => {
 
         {/* Right Column: Stand Sign Preview (7 cols) */}
         <div className="lg:col-span-7 flex flex-col items-center">
-          <div className="w-full max-w-md bg-gradient-to-b from-[#1E1E2F] to-[#12121E] border border-white/[0.12] rounded-3xl p-8 shadow-2xl relative overflow-hidden text-center">
+          <div className="w-full max-w-md bg-gradient-to-b from-[#1E1E2F] to-[#12121E] border border-white/[0.12] rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-2xl relative overflow-hidden text-center">
             {/* Ambient Background Glow */}
             <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
             {/* Stand Header */}
-            <div className="relative z-10 space-y-2 mb-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.1] text-xs font-semibold text-cyan-400 font-mono">
+            <div className="relative z-10 space-y-2 mb-5 sm:mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.1] text-[11px] sm:text-xs font-semibold text-cyan-400 font-mono">
                 <FiShield />
                 <span>QR-Pass • QR Access System</span>
               </div>
-              <h2 className="text-2xl font-bold text-white tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                 Scan to Check In
               </h2>
               <p className="text-xs text-zinc-400 max-w-xs mx-auto">
@@ -219,28 +219,29 @@ const CreateQR = () => {
             </div>
 
             {/* The QR Box */}
-            <div className="relative z-10 p-5 bg-white rounded-2xl shadow-xl mx-auto w-fit border-4 border-cyan-400/20">
+            <div className="relative z-10 p-3 sm:p-5 bg-white rounded-2xl shadow-xl mx-auto w-fit border-4 border-cyan-400/20">
               <QRCodeSVG
                 id="reception-qr-svg"
                 value={checkInUrl}
-                size={240}
+                size={220}
+                className="w-48 h-48 sm:w-56 sm:h-56"
                 level="H"
                 includeMargin={false}
               />
             </div>
 
             {/* Steps Instruction Pill */}
-            <div className="relative z-10 mt-6 pt-5 border-t border-white/[0.08] flex items-center justify-center gap-6 text-[11px] font-mono text-zinc-400">
+            <div className="relative z-10 mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-white/[0.08] flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-[10px] sm:text-[11px] font-mono text-zinc-400">
               <div className="flex items-center gap-1.5">
-                <span className="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">1</span>
+                <span className="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-[10px]">1</span>
                 <span>Scan QR</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-4 h-4 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold">2</span>
+                <span className="w-4 h-4 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold text-[10px]">2</span>
                 <span>Enter Info</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">3</span>
+                <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[10px]">3</span>
                 <span>Pass Issued</span>
               </div>
             </div>

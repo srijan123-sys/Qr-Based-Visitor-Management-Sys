@@ -73,23 +73,23 @@ function App() {
     );
   }
 
-  // Authenticated → show dashboard layout OR public check-in (admins can check in too)
+  // Authenticated → show dashboard layout OR public check-in
   return (
     <>
       <Toaster position="top-right" toastOptions={{ className: 'glass-panel text-white' }} />
       <Routes>
         <Route path="/checkin/:qrId" element={<CheckIn />} />
         <Route path="*" element={
-          <div className="flex h-screen overflow-hidden">
+          <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-[#0A0A0F]">
             <Sidebar user={user} onLogout={handleLogout} />
-            <div className="flex-1 overflow-y-auto bg-[#0A0A0F] p-4 md:p-8">
+            <main className="flex-1 overflow-y-auto p-3.5 sm:p-6 md:p-8 pb-24 md:pb-8">
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/create" element={<CreateQR />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
-            </div>
+            </main>
           </div>
         } />
       </Routes>

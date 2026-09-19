@@ -148,123 +148,125 @@ const Dashboard = () => {
   return (
     <div className="space-y-8 animate-fade-in max-w-7xl mx-auto pb-12">
       {/* Top Banner & Quick Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-2 border-b border-white/[0.06]">
-        <div>
-          <div className="flex items-center gap-2.5 mb-1.5">
-            <h1 className="text-2xl lg:text-3xl font-bold text-white tracking-tight">
-              Live Visitor Log
-            </h1>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/25">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-              REAL-TIME
-            </span>
+      <div className="flex flex-col gap-4 pb-2 border-b border-white/[0.06]">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <div className="flex items-center gap-2.5 mb-1">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight">
+                Live Visitor Log
+              </h1>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/25 shrink-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                LIVE
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-zinc-400">
+              Real-time front-desk access control & digital security log.
+            </p>
           </div>
-          <p className="text-sm text-zinc-400">
-            Monitor and manage front-desk building access with instant digital logging.
-          </p>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] font-mono text-xs text-zinc-300">
+          <div className="flex items-center gap-2 self-start sm:self-auto px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] font-mono text-xs text-zinc-300">
             <FiClock className="text-cyan-400" />
             <span>{currentTime.toLocaleTimeString()}</span>
-            <span className="text-zinc-600">|</span>
-            <span className="text-zinc-400">{currentTime.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
           </div>
+        </div>
 
+        {/* Action Buttons Toolbar */}
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3">
           <button
-            onClick={fetchVisitors}
-            disabled={refreshing}
-            className="btn-secondary !p-2.5"
-            title="Refresh logs"
+            onClick={() => setShowWalkInModal(true)}
+            className="btn-primary col-span-2 sm:col-auto shadow-lg shadow-orange-500/25 justify-center text-xs sm:text-sm py-2.5"
           >
-            <FiRefreshCw className={`${refreshing ? 'animate-spin text-cyan-400' : ''}`} />
+            <FiUserPlus />
+            <span>+ Walk-in Check-In</span>
           </button>
 
           <button
             onClick={exportCSV}
-            className="btn-secondary"
+            className="btn-secondary justify-center text-xs sm:text-sm py-2.5"
           >
             <FiDownload />
             <span>Export CSV</span>
           </button>
 
           <button
-            onClick={() => setShowWalkInModal(true)}
-            className="btn-primary shadow-lg shadow-orange-500/25"
+            onClick={fetchVisitors}
+            disabled={refreshing}
+            className="btn-secondary justify-center text-xs sm:text-sm py-2.5"
+            title="Refresh logs"
           >
-            <FiUserPlus />
-            <span>Walk-in Check-In</span>
+            <FiRefreshCw className={`${refreshing ? 'animate-spin text-cyan-400' : ''}`} />
+            <span>Refresh</span>
           </button>
         </div>
       </div>
 
       {/* KPI Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
         {/* Active In Building */}
-        <div className="card card-glow-cyan border-l-4 border-l-cyan-500">
+        <div className="card card-glow-cyan border-l-4 border-l-cyan-500 p-4 sm:p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400 mb-1">
+              <p className="text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">
                 Currently In Building
               </p>
-              <h3 className="text-4xl font-extrabold text-white font-mono tracking-tight">
+              <h3 className="text-3xl sm:text-4xl font-extrabold text-white font-mono tracking-tight">
                 {activeVisitors.length}
               </h3>
-              <p className="text-xs text-cyan-400 mt-2 flex items-center gap-1.5 font-medium">
+              <p className="text-xs text-cyan-400 mt-1.5 flex items-center gap-1.5 font-medium">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
-                Active on premises now
+                Active on premises
               </p>
             </div>
-            <div className="w-13 h-13 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shadow-inner">
-              <FiClock className="text-2xl" />
+            <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <FiClock className="text-xl sm:text-2xl" />
             </div>
           </div>
         </div>
 
         {/* Total Today */}
-        <div className="card card-glow-orange border-l-4 border-l-orange-500">
+        <div className="card card-glow-orange border-l-4 border-l-orange-500 p-4 sm:p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400 mb-1">
+              <p className="text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">
                 Total Visitors Today
               </p>
-              <h3 className="text-4xl font-extrabold text-white font-mono tracking-tight">
+              <h3 className="text-3xl sm:text-4xl font-extrabold text-white font-mono tracking-tight">
                 {totalToday.length}
               </h3>
-              <p className="text-xs text-orange-400 mt-2 font-medium">
+              <p className="text-xs text-orange-400 mt-1.5 font-medium">
                 Registered today
               </p>
             </div>
-            <div className="w-13 h-13 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 shadow-inner">
-              <FiUsers className="text-2xl" />
+            <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400">
+              <FiUsers className="text-xl sm:text-2xl" />
             </div>
           </div>
         </div>
 
         {/* Checked Out */}
-        <div className="card border-l-4 border-l-emerald-500">
+        <div className="card border-l-4 border-l-emerald-500 p-4 sm:p-5 sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400 mb-1">
+              <p className="text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">
                 Checked Out Today
               </p>
-              <h3 className="text-4xl font-extrabold text-white font-mono tracking-tight">
+              <h3 className="text-3xl sm:text-4xl font-extrabold text-white font-mono tracking-tight">
                 {checkedOutVisitors.length}
               </h3>
-              <p className="text-xs text-emerald-400 mt-2 font-medium">
-                Safely completed departures
+              <p className="text-xs text-emerald-400 mt-1.5 font-medium">
+                Safely departed
               </p>
             </div>
-            <div className="w-13 h-13 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-inner">
-              <FiCheckCircle className="text-2xl" />
+            <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <FiCheckCircle className="text-xl sm:text-2xl" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         {/* Search Field */}
         <div className="relative flex-1 max-w-md">
           <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-base pointer-events-none" />
@@ -273,7 +275,7 @@ const Dashboard = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search visitor, phone, host, purpose..."
-            className="input-field !pl-10 !py-2.5 text-sm"
+            className="input-field !pl-10 !py-2.5 text-xs sm:text-sm"
           />
           {searchTerm && (
             <button
@@ -285,11 +287,11 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex items-center gap-1.5 p-1 bg-white/[0.03] border border-white/[0.08] rounded-xl self-start sm:self-auto">
+        {/* Filter Pills — horizontally scrollable on mobile */}
+        <div className="flex items-center gap-1.5 p-1 bg-white/[0.03] border border-white/[0.08] rounded-xl overflow-x-auto select-none shrink-0">
           <button
             onClick={() => setFilterStatus('ALL')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap ${
               filterStatus === 'ALL'
                 ? 'bg-cyan-500 text-white shadow-sm shadow-cyan-500/20'
                 : 'text-zinc-400 hover:text-white'
@@ -299,7 +301,7 @@ const Dashboard = () => {
           </button>
           <button
             onClick={() => setFilterStatus('INSIDE')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap ${
               filterStatus === 'INSIDE'
                 ? 'bg-cyan-500 text-white shadow-sm shadow-cyan-500/20'
                 : 'text-zinc-400 hover:text-white'
@@ -309,7 +311,7 @@ const Dashboard = () => {
           </button>
           <button
             onClick={() => setFilterStatus('CHECKED_OUT')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap ${
               filterStatus === 'CHECKED_OUT'
                 ? 'bg-cyan-500 text-white shadow-sm shadow-cyan-500/20'
                 : 'text-zinc-400 hover:text-white'
@@ -320,12 +322,12 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Main Table Glass Card */}
+      {/* Main Records Container */}
       <div className="card !p-0 overflow-hidden border border-white/[0.08] shadow-2xl">
-        <div className="p-5 border-b border-white/[0.06] flex items-center justify-between bg-white/[0.01]">
+        <div className="p-4 sm:p-5 border-b border-white/[0.06] flex items-center justify-between bg-white/[0.01]">
           <div>
-            <h2 className="text-base font-bold text-white tracking-tight">Visitor Records</h2>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <h2 className="text-sm sm:text-base font-bold text-white tracking-tight">Visitor Records</h2>
+            <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">
               Showing {filteredVisitors.length} of {visitors.length} total entries
             </p>
           </div>
@@ -338,7 +340,8 @@ const Dashboard = () => {
           </Link>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* ── Desktop Table (hidden on mobile, visible md+) ──────────── */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-white/[0.03] text-zinc-400 text-xs font-mono uppercase tracking-wider border-b border-white/[0.06]">
@@ -354,7 +357,7 @@ const Dashboard = () => {
               {filteredVisitors.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="py-16 text-center">
-                    <div className="flex flex-col items-center justify-center max-w-md mx-auto space-y-3">
+                    <div className="flex flex-col items-center justify-center max-w-md mx-auto space-y-3 px-4">
                       <div className="w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-zinc-500">
                         <FiShield className="text-2xl text-cyan-400/50" />
                       </div>
@@ -389,7 +392,6 @@ const Dashboard = () => {
                       key={visitor._id} 
                       className="hover:bg-white/[0.02] transition-colors group"
                     >
-                      {/* Visitor Name & Phone */}
                       <td className="py-4 px-5">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-xs font-mono font-bold text-cyan-400 shrink-0">
@@ -407,7 +409,6 @@ const Dashboard = () => {
                         </div>
                       </td>
 
-                      {/* Host Name */}
                       <td className="py-4 px-5">
                         <div className="flex items-center gap-1.5 text-zinc-300 font-medium">
                           <span className="w-6 h-6 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 text-xs shrink-0">
@@ -417,7 +418,6 @@ const Dashboard = () => {
                         </div>
                       </td>
 
-                      {/* Purpose */}
                       <td className="py-4 px-5">
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-white/[0.04] border border-white/[0.06] text-zinc-300">
                           <FiBriefcase className="text-zinc-500" />
@@ -425,7 +425,6 @@ const Dashboard = () => {
                         </span>
                       </td>
 
-                      {/* Check-In Time */}
                       <td className="py-4 px-5 font-mono text-xs text-zinc-400">
                         <div>
                           {new Date(visitor.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -435,7 +434,6 @@ const Dashboard = () => {
                         </div>
                       </td>
 
-                      {/* Status Badge */}
                       <td className="py-4 px-5">
                         {visitor.status === 'Checked In' ? (
                           <span className="badge badge-cyan">
@@ -450,7 +448,6 @@ const Dashboard = () => {
                         )}
                       </td>
 
-                      {/* Actions */}
                       <td className="py-4 px-5 text-right">
                         {visitor.status === 'Checked In' ? (
                           <button
@@ -473,12 +470,98 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
+
+        {/* ── Mobile Visitor Cards (visible on mobile only, < md) ─────── */}
+        <div className="md:hidden divide-y divide-white/[0.06]">
+          {filteredVisitors.length === 0 ? (
+            <div className="py-12 px-4 text-center">
+              <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-zinc-500 mx-auto mb-3">
+                <FiShield className="text-xl text-cyan-400/50" />
+              </div>
+              <h4 className="text-sm font-bold text-white mb-1">No visitors found</h4>
+              <p className="text-xs text-zinc-400 mb-4">
+                {searchTerm ? 'Try adjusting your search query.' : 'No visitors recorded yet.'}
+              </p>
+              <button
+                onClick={() => setShowWalkInModal(true)}
+                className="btn-primary text-xs !py-2 w-full justify-center"
+              >
+                + Walk-in Check-In
+              </button>
+            </div>
+          ) : (
+            filteredVisitors.map((visitor) => {
+              const initials = visitor.name
+                ? visitor.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+                : 'V';
+
+              return (
+                <div key={visitor._id} className="p-4 space-y-3">
+                  {/* Top Row: Avatar + Name + Status */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-xs font-mono font-bold text-cyan-400 shrink-0">
+                        {initials}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-white text-sm leading-snug">{visitor.name}</h4>
+                        <a
+                          href={`tel:${visitor.phone}`}
+                          className="text-zinc-400 hover:text-cyan-300 text-xs flex items-center gap-1 font-mono mt-0.5"
+                        >
+                          <FiPhone className="text-[10px]" />
+                          <span>{visitor.phone}</span>
+                        </a>
+                      </div>
+                    </div>
+
+                    {visitor.status === 'Checked In' ? (
+                      <span className="badge badge-cyan text-[11px] shrink-0">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                        Active
+                      </span>
+                    ) : (
+                      <span className="badge badge-zinc text-[11px] shrink-0">
+                        <FiCheckCircle className="text-emerald-400" />
+                        Out
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Details Pill Row */}
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                    <span className="px-2 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-zinc-300">
+                      Host: <strong className="text-white">@{visitor.hostName}</strong>
+                    </span>
+                    <span className="px-2 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-zinc-300 flex items-center gap-1">
+                      <FiBriefcase className="text-zinc-500 text-[10px]" />
+                      <span>{visitor.purpose}</span>
+                    </span>
+                    <span className="text-zinc-500 font-mono text-[11px] ml-auto">
+                      {new Date(visitor.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+
+                  {/* Action Button */}
+                  {visitor.status === 'Checked In' && (
+                    <button
+                      onClick={() => handleCheckOut(visitor._id, visitor.name)}
+                      className="btn-danger w-full !py-2.5 text-xs font-semibold justify-center shadow-sm"
+                    >
+                      Check Out Visitor
+                    </button>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
 
       {/* Walk-in Modal */}
       {showWalkInModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
-          <div className="card w-full max-w-lg border border-white/[0.12] shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md animate-fade-in">
+          <div className="card w-full max-w-lg max-h-[92vh] overflow-y-auto border border-white/[0.12] shadow-2xl relative p-5 sm:p-6">
             <button
               onClick={() => setShowWalkInModal(false)}
               className="absolute top-5 right-5 text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-white/[0.08]"
