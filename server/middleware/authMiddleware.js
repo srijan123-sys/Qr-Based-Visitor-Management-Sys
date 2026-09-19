@@ -23,8 +23,9 @@ const protect = async (req, res, next) => {
   }
 
   try {
+    const JWT_SECRET = process.env.JWT_SECRET || 'qrpass_super_secret_jwt_token_key_2026';
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
 
     // Attach user to request (exclude password)
     req.user = await User.findById(decoded.id).select('-password');

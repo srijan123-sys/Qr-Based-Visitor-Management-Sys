@@ -23,11 +23,12 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Handle 401 responses (expired/invalid token)
+// Handle 401 responses (expired/invalid token on protected routes)
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const isAuthRoute = error.config?.url?.includes('/auth/');
+    if (error.response?.status === 401 && !isAuthRoute) {
       localStorage.removeItem('qr_token');
       localStorage.removeItem('qr_user');
       window.location.href = '/login';

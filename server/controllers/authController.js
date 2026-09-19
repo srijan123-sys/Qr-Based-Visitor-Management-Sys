@@ -6,9 +6,11 @@ const jwt    = require('jsonwebtoken');
 const User   = require('../models/User');
 const logger = require('../utils/logger');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'qrpass_super_secret_jwt_token_key_2026';
+
 // Helper: Generate JWT
 const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+  return jwt.sign({ id: userId }, JWT_SECRET, {
     expiresIn: '7d',
   });
 };
