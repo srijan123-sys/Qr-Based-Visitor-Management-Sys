@@ -20,7 +20,7 @@ const generateToken = (userId) => {
 // ────────────────────────────────────────────────
 const signup = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     // Validate input
     if (!name || !email || !password) {
@@ -40,7 +40,9 @@ const signup = async (req, res) => {
     }
 
     // Create user (password hashed in pre-save hook)
-    const user = await User.create({ name, email, password });
+    // For demo purposes, we allow passing 'role' in request. In production, this should be restricted.
+    const userRole = role && ['admin', 'receptionist'].includes(role) ? role : 'receptionist';
+    const user = await User.create({ name, email, password, role: userRole });
 
     logger.authSignup(email);
     logger.dbSave('Users', user._id);
@@ -53,6 +55,7 @@ const signup = async (req, res) => {
         _id:   user._id,
         name:  user.name,
         email: user.email,
+        role:  user.role,
         token: generateToken(user._id),
       },
     });
@@ -104,6 +107,7 @@ const login = async (req, res) => {
         _id:   user._id,
         name:  user.name,
         email: user.email,
+        role:  user.role,
         token: generateToken(user._id),
       },
     });

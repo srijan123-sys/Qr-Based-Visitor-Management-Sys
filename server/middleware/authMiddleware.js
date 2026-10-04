@@ -48,4 +48,20 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+// ── RBAC Middleware: Authorize by Role ────────────────────
+const authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      logger.error('RBAC MIDDLEWARE', { 
+        message: `Role ${req.user ? req.user.role : 'None'} blocked from accessing ${req.originalUrl}` 
+      });
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden — You do not have permission to access this resource',
+      });
+    }
+    next();
+  };
+};
+
+module.exports = { protect, authorizeRoles };
