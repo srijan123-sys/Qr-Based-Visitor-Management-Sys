@@ -148,18 +148,16 @@ const forgotPassword = async (req, res) => {
       If you did not request this, please ignore this email and your password will remain unchanged.
     `;
 
-    try {
-      // Bypassing network calls entirely for 100% reliability in the presentation.
-      // We directly send the reset URL back to the frontend to simulate the email flow.
-      logger.custom('DEMO MODE', `Simulating email send. Returning link directly to frontend: ${resetUrl}`, '\x1b[36m');
+    // Bypassing network calls entirely for 100% reliability in the presentation.
+    // We directly send the reset URL back to the frontend to simulate the email flow.
+    logger.custom('DEMO MODE', `Simulating email send. Returning link directly to frontend: ${resetUrl}`, '\x1b[36m');
 
-      return res.status(200).json({ 
-        success: true, 
-        message: 'Mock Email Sent! Click the link to continue.',
-        resetUrl // Sending the actual reset URL directly to the frontend
-      });
+    return res.status(200).json({ 
+      success: true, 
+      message: 'Mock Email Sent! Click the link to continue.',
+      resetUrl // Sending the actual reset URL directly to the frontend
+    });
 
-    } catch (err) {
   } catch (err) {
     logger.error('FORGOT PASSWORD', err);
     res.status(500).json({ success: false, message: 'Server error' });
