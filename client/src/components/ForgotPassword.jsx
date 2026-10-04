@@ -20,18 +20,17 @@ export default function ForgotPassword() {
       setLoading(true);
       const res = await API.post('/auth/forgotpassword', { email });
       
-      if (res.data.previewUrl) {
+      if (res.data.resetUrl) {
         toast.success(
           <div>
-            Email "sent"! <br />
-            <a href={res.data.previewUrl} target="_blank" rel="noreferrer" className="underline text-blue-300 font-bold">
-              Click here to view the Email
+            Reset link generated! (Demo Mode) <br />
+            <a href={res.data.resetUrl} className="underline text-orange-300 font-bold mt-1 inline-block">
+              Click here to Reset Password
             </a>
           </div>,
-          { duration: 8000 }
+          { duration: 10000 }
         );
-        // Automatically open the fake email in a new tab
-        window.open(res.data.previewUrl, '_blank');
+        // We do NOT open a new tab, they just click the link in the toast.
       } else {
         toast.success(res.data.message || 'Email sent successfully');
       }

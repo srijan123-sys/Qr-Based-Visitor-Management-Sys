@@ -149,30 +149,17 @@ const forgotPassword = async (req, res) => {
     `;
 
     try {
-      // Send email using Ethereal (Zero Setup!)
-      const previewUrl = await sendEmail({
-        email: user.email,
-        subject: 'Password Reset Request — QR-Pass',
-        message,
-      });
-
-      // Also log it just in case
-      logger.custom('ETHEREAL EMAIL', `Fake Email Sent! View it here: ${previewUrl}`, '\x1b[36m');
+      // Bypassing network calls entirely for 100% reliability in the presentation.
+      // We directly send the reset URL back to the frontend to simulate the email flow.
+      logger.custom('DEMO MODE', `Simulating email send. Returning link directly to frontend: ${resetUrl}`, '\x1b[36m');
 
       return res.status(200).json({ 
         success: true, 
-        message: 'Email sent via Ethereal!',
-        previewUrl // Send URL to frontend
+        message: 'Mock Email Sent! Click the link to continue.',
+        resetUrl // Sending the actual reset URL directly to the frontend
       });
 
     } catch (err) {
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpire = undefined;
-      await user.save({ validateBeforeSave: false });
-
-      logger.error('EMAIL SEND FAILED', err);
-      return res.status(500).json({ success: false, message: 'Email could not be sent' });
-    }
   } catch (err) {
     logger.error('FORGOT PASSWORD', err);
     res.status(500).json({ success: false, message: 'Server error' });
