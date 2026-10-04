@@ -84,9 +84,9 @@ function App() {
             <Sidebar user={user} onLogout={handleLogout} />
             <main className="flex-1 overflow-y-auto p-3.5 sm:p-6 md:p-8 pb-24 md:pb-8">
               <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/create" element={<CreateQR />} />
+                <Route path="/" element={<Dashboard user={user} />} />
+                <Route path="/dashboard" element={<Dashboard user={user} />} />
+                <Route path="/create" element={user.role === 'admin' ? <CreateQR /> : <Navigate to="/dashboard" replace />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </main>

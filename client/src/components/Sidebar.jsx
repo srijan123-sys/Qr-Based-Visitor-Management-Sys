@@ -63,21 +63,23 @@ const Sidebar = ({ user, onLogout }) => {
               </span>
             </NavLink>
 
-            <NavLink
-              to="/create"
-              className={({ isActive }) => `
-                flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 group
-                ${isActive 
-                  ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/25 shadow-sm shadow-cyan-500/10' 
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent'}
-              `}
-            >
-              <div className="flex items-center gap-3">
-                <FiGrid className="text-lg transition-transform group-hover:scale-110" />
-                <span>Reception QR</span>
-              </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/[0.06] text-zinc-400">Desk</span>
-            </NavLink>
+            {user?.role === 'admin' && (
+              <NavLink
+                to="/create"
+                className={({ isActive }) => `
+                  flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 group
+                  ${isActive 
+                    ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/25 shadow-sm shadow-cyan-500/10' 
+                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent'}
+                `}
+              >
+                <div className="flex items-center gap-3">
+                  <FiGrid className="text-lg transition-transform group-hover:scale-110" />
+                  <span>Reception QR</span>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/[0.06] text-zinc-400">Desk</span>
+              </NavLink>
+            )}
           </div>
 
           {/* Quick System Badge */}
@@ -164,18 +166,20 @@ const Sidebar = ({ user, onLogout }) => {
           <span>Visitor Log</span>
         </NavLink>
 
-        <NavLink
-          to="/create"
-          className={({ isActive }) => `
-            flex flex-col items-center gap-1 py-1 px-4 rounded-xl text-xs font-semibold transition-all
-            ${isActive 
-              ? 'text-cyan-400 scale-105' 
-              : 'text-zinc-400 hover:text-white'}
-          `}
-        >
-          <FiGrid size={20} />
-          <span>Reception QR</span>
-        </NavLink>
+        {user?.role === 'admin' && (
+          <NavLink
+            to="/create"
+            className={({ isActive }) => `
+              flex flex-col items-center gap-1 py-1 px-4 rounded-xl text-xs font-semibold transition-all
+              ${isActive 
+                ? 'text-cyan-400 scale-105' 
+                : 'text-zinc-400 hover:text-white'}
+            `}
+          >
+            <FiGrid size={20} />
+            <span>Reception QR</span>
+          </NavLink>
+        )}
       </nav>
     </>
   );

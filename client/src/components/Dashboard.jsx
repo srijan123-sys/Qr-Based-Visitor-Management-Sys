@@ -20,7 +20,7 @@ import { Link } from 'react-router-dom';
 // ── Validation Regex ──────────────────────────────────────
 const PHONE_REGEX = /^\d{10}$/;
 
-const Dashboard = () => {
+const Dashboard = ({ user }) => {
   const [visitors, setVisitors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -375,13 +375,15 @@ const Dashboard = () => {
               Showing {filteredVisitors.length} of {visitors.length} total entries
             </p>
           </div>
-          <Link
-            to="/create"
-            className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
-          >
-            <span>Desk QR Code</span>
-            <span>&rarr;</span>
-          </Link>
+          {user?.role === 'admin' && (
+            <Link
+              to="/create"
+              className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
+            >
+              <span>Desk QR Code</span>
+              <span>&rarr;</span>
+            </Link>
+          )}
         </div>
 
         {/* ── Desktop Table (hidden on mobile, visible md+) ──────────── */}
@@ -412,9 +414,11 @@ const Dashboard = () => {
                           : 'No visitor logs yet. Generate your Reception QR Code or register a walk-in visitor to begin.'}
                       </p>
                       <div className="flex items-center gap-3 pt-2">
-                        <Link to="/create" className="btn-cyan text-xs !py-2">
-                          View Reception QR
-                        </Link>
+                        {user?.role === 'admin' && (
+                          <Link to="/create" className="btn-cyan text-xs !py-2">
+                            View Reception QR
+                          </Link>
+                        )}
                         <button
                           onClick={() => setShowWalkInModal(true)}
                           className="btn-secondary text-xs !py-2"
