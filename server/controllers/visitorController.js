@@ -97,6 +97,19 @@ const getVisitors = async (req, res) => {
   }
 };
 
+// @desc    Get logged in user's own visits
+// @route   GET /api/visitors/me
+// @access  Private
+const getMyVisitors = async (req, res) => {
+  try {
+    const visitors = await Visitor.find({ email: req.user.email }).sort({ checkInTime: -1 });
+    res.status(200).json(visitors);
+  } catch (error) {
+    logger.error('Fetch My Visitors Error', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 // @desc    Check-out a visitor (Admin)
 // @route   PUT /api/visitors/checkout/:id
 // @access  Private
@@ -199,6 +212,7 @@ const autoCheckOutAll = async () => {
 module.exports = {
   registerVisitor,
   getVisitors,
+  getMyVisitors,
   checkOutVisitor,
   selfCheckOut,
   autoCheckOutAll

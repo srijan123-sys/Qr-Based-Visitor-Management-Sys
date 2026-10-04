@@ -49,18 +49,14 @@ const Dashboard = ({ user }) => {
   }, []);
 
   useEffect(() => {
-    // If user is just a 'user', don't fetch visitors, they don't have access
-    if (user?.role === 'user') {
-      setLoading(false);
-      return;
-    }
     fetchVisitors();
   }, [user]);
 
   const fetchVisitors = async () => {
     try {
       setRefreshing(true);
-      const res = await API.get('/visitors');
+      const endpoint = user?.role === 'user' ? '/visitors/me' : '/visitors';
+      const res = await API.get(endpoint);
       setVisitors(res.data || []);
     } catch (error) {
       toast.error('Failed to sync visitor logs');
@@ -72,7 +68,11 @@ const Dashboard = ({ user }) => {
 
   const handleCheckOut = async (id, visitorName) => {
     try {
-      await API.put(`/visitors/checkout/${id}`);
+      if (user?.role === 'user') {
+        await API.put(`/visitors/checkout-self/${id}`);
+      } else {
+        await API.put(`/visitors/checkout/${id}`);
+      }
       toast.success(`${visitorName || 'Visitor'} checked out successfully`);
       fetchVisitors();
     } catch (error) {
@@ -194,18 +194,55 @@ const Dashboard = ({ user }) => {
     );
   }
 
-  // ── No Access Screen for basic users ────────────────────────────
+  // ── Personal Dashboard Screen for basic users ───────────────────
   if (user?.role === 'user') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] text-center space-y-4 animate-fade-in p-4">
-        <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-zinc-500 mb-2 shadow-inner">
-          <FiShield className="text-4xl text-cyan-400/50" />
+      <div className="space-y-6 animate-fade-in max-w-4xl mx-auto pb-12 pt-4">
+        <div className="border-b border-white/[0.06] pb-4">
+          <h1 className="text-2xl font-bold text-white tracking-tight">My Active Passes</h1>
+          <p className="text-sm text-zinc-400 mt-1">View your check-ins and independently check out.</p>
         </div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">Account Pending Approval</h2>
-        <p className="text-sm text-zinc-400 max-w-sm mx-auto leading-relaxed">
-          Your account was created successfully, but you currently have restricted access. 
-          Please wait for the Super Admin to assign you a Receptionist or Admin role.
-        </p>
+
+        {visitors.length === 0 ? (
+          <div className="flex flex-col items-center justify-center p-12 text-center bg-white/[0.02] border border-white/[0.05] rounded-2xl">
+            <FiShield className="text-4xl text-zinc-600 mb-3" />
+            <p className="text-zinc-400">You have no active or past visits.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {visitors.map(v => (
+              <div key={v._id} className="bg-[#13131F]/80 backdrop-blur-xl border border-white/[0.08] p-5 rounded-2xl shadow-xl flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="font-semibold text-white text-lg">{v.hostName}</h3>
+                      <p className="text-xs font-mono text-zinc-400 mt-0.5">{v.purpose}</p>
+                    </div>
+                    {v.status === 'Checked In' ? (
+                      <span className="text-[10px] font-mono px-2 py-1 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">ACTIVE</span>
+                    ) : (
+                      <span className="text-[10px] font-mono px-2 py-1 rounded bg-zinc-500/15 text-zinc-400 border border-zinc-500/20">COMPLETED</span>
+                    )}
+                  </div>
+                  
+                  <div className="text-xs space-y-1.5 text-zinc-400 mb-6">
+                    <p><span className="text-zinc-500">In:</span> {new Date(v.checkInTime).toLocaleString()}</p>
+                    {v.checkOutTime && <p><span className="text-zinc-500">Out:</span> {new Date(v.checkOutTime).toLocaleString()} {getCheckoutMethodBadge(v.checkOutMethod)}</p>}
+                  </div>
+                </div>
+
+                {v.status === 'Checked In' && (
+                  <button
+                    onClick={() => handleCheckOut(v._id, v.name)}
+                    className="w-full py-2.5 rounded-xl bg-orange-500/10 text-orange-400 font-semibold text-sm hover:bg-orange-500/20 hover:text-orange-300 transition-colors border border-orange-500/20"
+                  >
+                    Check Out Now
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
