@@ -3,6 +3,7 @@
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 const Visitor = require('../models/Visitor');
+const cloudinary = require('../config/cloudinary');
 const logger = require('../utils/logger');
 
 // ── Validation Helpers (Regex-based as sir suggested) ─────────
@@ -34,6 +35,22 @@ const registerVisitor = async (req, res) => {
       });
     }
 
+    let uploadedImageUrl = '';
+    if (faceImage && faceImage.startsWith('data:image')) {
+      try {
+        const uploadResponse = await cloudinary.uploader.upload(faceImage, {
+          folder: 'visitor_faces',
+          width: 320,
+          height: 320,
+          crop: 'fill'
+        });
+        uploadedImageUrl = uploadResponse.secure_url;
+      } catch (uploadError) {
+        logger.error('Cloudinary Upload Error', uploadError);
+        return res.status(500).json({ message: 'Failed to upload face image to cloud storage.' });
+      }
+    }
+
     const visitor = await Visitor.create({
       name: name.trim(),
       phone,
@@ -41,7 +58,7 @@ const registerVisitor = async (req, res) => {
       purpose,
       hostName: hostName.trim(),
       receptionQrId,
-      faceImage: faceImage || ''
+      faceImage: uploadedImageUrl || faceImage // Use URL if uploaded, fallback to base64 or empty
     });
 
     logger.custom('VISITOR', `New Check-In: ${name} (Host: ${hostName})`, '\x1b[36m');
