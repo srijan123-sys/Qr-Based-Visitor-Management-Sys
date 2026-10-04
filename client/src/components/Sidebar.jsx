@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { FiUsers, FiGrid, FiLogOut, FiShield } from 'react-icons/fi';
+import { FiUsers, FiGrid, FiLogOut, FiShield, FiInfo } from 'react-icons/fi';
 import { HiOutlineQrcode } from 'react-icons/hi';
 
 const Sidebar = ({ user, onLogout }) => {
@@ -82,7 +82,7 @@ const Sidebar = ({ user, onLogout }) => {
               </NavLink>
             )}
 
-            {user?.role === 'admin' && (
+            {['admin', 'receptionist'].includes(user?.role) && (
               <NavLink
                 to="/create"
                 className={({ isActive }) => `
@@ -116,6 +116,22 @@ const Sidebar = ({ user, onLogout }) => {
                 </div>
               </NavLink>
             )}
+
+            {/* About System Tab (For all users) */}
+            <NavLink
+              to="/about"
+              className={({ isActive }) => `
+                flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 group
+                ${isActive 
+                  ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/25 shadow-sm shadow-indigo-500/10' 
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent'}
+              `}
+            >
+              <div className="flex items-center gap-3">
+                <FiInfo className="text-lg transition-transform group-hover:scale-110" />
+                <span>About QR-MS</span>
+              </div>
+            </NavLink>
           </div>
 
           {/* Quick System Badge */}
@@ -221,7 +237,7 @@ const Sidebar = ({ user, onLogout }) => {
           </NavLink>
         )}
 
-        {user?.role === 'admin' && (
+        {['admin', 'receptionist'].includes(user?.role) && (
           <NavLink
             to="/create"
             className={({ isActive }) => `
@@ -250,6 +266,19 @@ const Sidebar = ({ user, onLogout }) => {
             <span>Users</span>
           </NavLink>
         )}
+
+        <NavLink
+          to="/about"
+          className={({ isActive }) => `
+            flex flex-col items-center gap-1 py-1 px-4 rounded-xl text-xs font-semibold transition-all
+            ${isActive 
+              ? 'text-indigo-400 scale-105' 
+              : 'text-zinc-400 hover:text-white'}
+          `}
+        >
+          <FiInfo size={20} />
+          <span>About</span>
+        </NavLink>
       </nav>
     </>
   );

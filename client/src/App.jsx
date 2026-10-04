@@ -13,6 +13,7 @@ import ForgotPassword from './components/ForgotPassword.jsx';
 import ResetPassword from './components/ResetPassword.jsx';
 import CheckIn from './components/CheckIn.jsx';
 import AdminPanel from './components/AdminPanel.jsx';
+import About from './components/About.jsx';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -91,8 +92,9 @@ function App() {
               <Routes>
                 <Route path="/" element={<Dashboard user={user} />} />
                 <Route path="/dashboard" element={<Dashboard user={user} />} />
-                <Route path="/create" element={user.role === 'admin' ? <CreateQR /> : <Navigate to="/dashboard" replace />} />
+                <Route path="/create" element={['admin', 'receptionist'].includes(user.role) ? <CreateQR /> : <Navigate to="/dashboard" replace />} />
                 <Route path="/users" element={user.role === 'admin' ? <AdminPanel user={user} /> : <Navigate to="/dashboard" replace />} />
+                <Route path="/about" element={<About />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </main>
