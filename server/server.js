@@ -69,6 +69,9 @@ app.use('/api/qr', require('./routes/qrRoutes'));
 // Visitor routes
 app.use('/api/visitors', require('./routes/visitorRoutes'));
 
+// User management routes (Admin only)
+app.use('/api/users', require('./routes/userRoutes'));
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.status(200).json({

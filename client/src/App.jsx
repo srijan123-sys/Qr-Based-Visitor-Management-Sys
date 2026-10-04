@@ -10,6 +10,7 @@ import CreateQR from './components/CreateQR.jsx';
 import Login from './components/Login.jsx';
 import Signup from './components/Signup.jsx';
 import CheckIn from './components/CheckIn.jsx';
+import AdminPanel from './components/AdminPanel.jsx';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -87,6 +88,7 @@ function App() {
                 <Route path="/" element={<Dashboard user={user} />} />
                 <Route path="/dashboard" element={<Dashboard user={user} />} />
                 <Route path="/create" element={user.role === 'admin' ? <CreateQR /> : <Navigate to="/dashboard" replace />} />
+                <Route path="/users" element={user.role === 'admin' ? <AdminPanel user={user} /> : <Navigate to="/dashboard" replace />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </main>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { FiUsers, FiGrid, FiLogOut } from 'react-icons/fi';
+import { FiUsers, FiGrid, FiLogOut, FiShield } from 'react-icons/fi';
 import { HiOutlineQrcode } from 'react-icons/hi';
 
 const Sidebar = ({ user, onLogout }) => {
@@ -80,6 +80,23 @@ const Sidebar = ({ user, onLogout }) => {
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/[0.06] text-zinc-400">Desk</span>
               </NavLink>
             )}
+
+            {user?.role === 'admin' && (
+              <NavLink
+                to="/users"
+                className={({ isActive }) => `
+                  flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 group
+                  ${isActive 
+                    ? 'bg-red-500/10 text-red-400 border border-red-500/25 shadow-sm shadow-red-500/10' 
+                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent'}
+                `}
+              >
+                <div className="flex items-center gap-3">
+                  <FiShield className="text-lg transition-transform group-hover:scale-110" />
+                  <span>Manage Users</span>
+                </div>
+              </NavLink>
+            )}
           </div>
 
           {/* Quick System Badge */}
@@ -101,8 +118,10 @@ const Sidebar = ({ user, onLogout }) => {
               {user?.name?.charAt(0).toUpperCase() || 'A'}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-white truncate leading-tight">{user?.name || 'Administrator'}</p>
-              <p className="text-[11px] text-zinc-400 truncate font-mono">{user?.email || 'admin@vault.io'}</p>
+              <p className="text-sm font-semibold text-white truncate leading-tight">{user?.name || 'Guest'}</p>
+              <p className="text-[11px] text-zinc-400 truncate font-mono">
+                {user?.email || 'user@example.com'} • <span className="text-cyan-400 uppercase">{user?.role || 'user'}</span>
+              </p>
             </div>
           </div>
 
@@ -178,6 +197,21 @@ const Sidebar = ({ user, onLogout }) => {
           >
             <FiGrid size={20} />
             <span>Reception QR</span>
+          </NavLink>
+        )}
+
+        {user?.role === 'admin' && (
+          <NavLink
+            to="/users"
+            className={({ isActive }) => `
+              flex flex-col items-center gap-1 py-1 px-4 rounded-xl text-xs font-semibold transition-all
+              ${isActive 
+                ? 'text-red-400 scale-105' 
+                : 'text-zinc-400 hover:text-white'}
+            `}
+          >
+            <FiShield size={20} />
+            <span>Users</span>
           </NavLink>
         )}
       </nav>
