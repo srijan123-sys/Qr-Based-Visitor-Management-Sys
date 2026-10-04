@@ -49,8 +49,13 @@ const Dashboard = ({ user }) => {
   }, []);
 
   useEffect(() => {
+    // If user is just a 'user', don't fetch visitors, they don't have access
+    if (user?.role === 'user') {
+      setLoading(false);
+      return;
+    }
     fetchVisitors();
-  }, []);
+  }, [user]);
 
   const fetchVisitors = async () => {
     try {
@@ -185,6 +190,22 @@ const Dashboard = ({ user }) => {
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <div className="w-12 h-12 rounded-full border-2 border-cyan-500/20 border-t-cyan-500 animate-spin"></div>
         <p className="font-mono text-sm text-zinc-400">Loading QR Management System logs...</p>
+      </div>
+    );
+  }
+
+  // ── No Access Screen for basic users ────────────────────────────
+  if (user?.role === 'user') {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[70vh] text-center space-y-4 animate-fade-in p-4">
+        <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-zinc-500 mb-2 shadow-inner">
+          <FiShield className="text-4xl text-cyan-400/50" />
+        </div>
+        <h2 className="text-2xl font-bold text-white tracking-tight">Account Pending Approval</h2>
+        <p className="text-sm text-zinc-400 max-w-sm mx-auto leading-relaxed">
+          Your account was created successfully, but you currently have restricted access. 
+          Please wait for the Super Admin to assign you a Receptionist or Admin role.
+        </p>
       </div>
     );
   }

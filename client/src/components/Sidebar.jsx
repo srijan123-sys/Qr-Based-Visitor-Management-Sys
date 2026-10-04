@@ -44,24 +44,26 @@ const Sidebar = ({ user, onLogout }) => {
               </span>
             </div>
 
-            <NavLink
-              to="/dashboard"
-              className={({ isActive }) => `
-                flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 group
-                ${isActive 
-                  ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/25 shadow-sm shadow-cyan-500/10' 
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent'}
-              `}
-            >
-              <div className="flex items-center gap-3">
-                <FiUsers className="text-lg transition-transform group-hover:scale-110" />
-                <span>Visitor Log</span>
-              </div>
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-              </span>
-            </NavLink>
+            {['admin', 'receptionist'].includes(user?.role) && (
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) => `
+                  flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 group
+                  ${isActive 
+                    ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/25 shadow-sm shadow-cyan-500/10' 
+                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent'}
+                `}
+              >
+                <div className="flex items-center gap-3">
+                  <FiUsers className="text-lg transition-transform group-hover:scale-110" />
+                  <span>Visitor Log</span>
+                </div>
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                </span>
+              </NavLink>
+            )}
 
             {user?.role === 'admin' && (
               <NavLink
@@ -166,24 +168,26 @@ const Sidebar = ({ user, onLogout }) => {
 
       {/* ── Mobile Floating Bottom Navigation (visible on mobile only) ── */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#10101A]/95 backdrop-blur-2xl border-t border-white/[0.1] px-6 py-2 flex items-center justify-around shadow-2xl">
-        <NavLink
-          to="/dashboard"
-          className={({ isActive }) => `
-            flex flex-col items-center gap-1 py-1 px-4 rounded-xl text-xs font-semibold transition-all
-            ${isActive 
-              ? 'text-cyan-400 scale-105' 
-              : 'text-zinc-400 hover:text-white'}
-          `}
-        >
-          <div className="relative">
-            <FiUsers size={20} />
-            <span className="absolute -top-1 -right-1 flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-            </span>
-          </div>
-          <span>Visitor Log</span>
-        </NavLink>
+        {['admin', 'receptionist'].includes(user?.role) && (
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) => `
+              flex flex-col items-center gap-1 py-1 px-4 rounded-xl text-xs font-semibold transition-all
+              ${isActive 
+                ? 'text-cyan-400 scale-105' 
+                : 'text-zinc-400 hover:text-white'}
+            `}
+          >
+            <div className="relative">
+              <FiUsers size={20} />
+              <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+              </span>
+            </div>
+            <span>Visitor Log</span>
+          </NavLink>
+        )}
 
         {user?.role === 'admin' && (
           <NavLink
