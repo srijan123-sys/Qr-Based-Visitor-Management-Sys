@@ -110,13 +110,12 @@ export default function Login({ onLogin }) {
         </form>
 
         <div className="mt-6 pt-5 border-t border-white/[0.06] text-center text-xs text-zinc-400 space-y-2">
-          <button 
-            type="button"
-            onClick={() => toast('Please contact your Super Admin to reset your password.', { icon: '🔒' })}
+          <Link 
+            to="/forgotpassword"
             className="text-orange-400 font-semibold hover:underline block w-full"
           >
             Forgot Password?
-          </button>
+          </Link>
           <div>
             Don't have an admin account?{' '}
             <Link to="/signup" className="text-cyan-400 font-semibold hover:underline">

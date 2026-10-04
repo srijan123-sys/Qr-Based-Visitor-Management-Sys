@@ -3,8 +3,10 @@
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 const jwt    = require('jsonwebtoken');
+const crypto = require('crypto');
 const User   = require('../models/User');
 const logger = require('../utils/logger');
+const sendEmail = require('../utils/sendEmail');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'qrpass_super_secret_jwt_token_key_2026';
 
@@ -117,4 +119,94 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { signup, login };
+// ────────────────────────────────────────────────
+//  POST /api/auth/forgotpassword
+// ────────────────────────────────────────────────
+const forgotPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'There is no user with that email' });
+    }
+
+    // Get reset token
+    const resetToken = user.getResetPasswordToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    // Create reset url
+    // This points to the frontend React app
+    const resetUrl = `${req.protocol}://${req.get('host').replace('5000', '5173')}/resetpassword/${resetToken}`;
+
+    const message = `
+      You are receiving this email because you (or someone else) has requested the reset of a password.
+      Please click on the following link, or paste this into your browser to complete the process:
+      
+      ${resetUrl}
+      
+      If you did not request this, please ignore this email and your password will remain unchanged.
+    `;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: 'Password Reset Request — QR-Pass',
+        message,
+      });
+
+      res.status(200).json({ success: true, message: 'Email sent' });
+    } catch (err) {
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      logger.error('EMAIL SEND', err);
+      return res.status(500).json({ success: false, message: 'Email could not be sent' });
+    }
+  } catch (err) {
+    logger.error('FORGOT PASSWORD', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// ────────────────────────────────────────────────
+//  PUT /api/auth/resetpassword/:resettoken
+// ────────────────────────────────────────────────
+const resetPassword = async (req, res) => {
+  try {
+    // Get hashed token
+    const resetPasswordToken = crypto
+      .createHash('sha256')
+      .update(req.params.resettoken)
+      .digest('hex');
+
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Invalid token or token has expired' });
+    }
+
+    // Set new password
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Password reset successful',
+      data: {
+        token: generateToken(user._id),
+      },
+    });
+  } catch (err) {
+    logger.error('RESET PASSWORD', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+module.exports = { signup, login, forgotPassword, resetPassword };

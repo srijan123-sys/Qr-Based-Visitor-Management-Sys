@@ -9,6 +9,8 @@ import Dashboard from './components/Dashboard.jsx';
 import CreateQR from './components/CreateQR.jsx';
 import Login from './components/Login.jsx';
 import Signup from './components/Signup.jsx';
+import ForgotPassword from './components/ForgotPassword.jsx';
+import ResetPassword from './components/ResetPassword.jsx';
 import CheckIn from './components/CheckIn.jsx';
 import AdminPanel from './components/AdminPanel.jsx';
 import { Toaster } from 'react-hot-toast';
@@ -67,6 +69,8 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/resetpassword/:resettoken" element={<ResetPassword onLogin={handleLogin} />} />
           <Route path="/checkin/:qrId" element={<CheckIn />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
