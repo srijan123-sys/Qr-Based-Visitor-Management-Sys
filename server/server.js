@@ -8,6 +8,8 @@
 //  • JWT-based authentication
 //  • Dynamic QR code generation & redirect
 //  • Scan analytics logging
+//  • Face capture for visitor identity
+//  • Auto-checkout cron job at 5 PM (office closing)
 //  • Colorful terminal output for live presentations
 //
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -15,6 +17,7 @@
 const express   = require('express');
 const cors      = require('cors');
 const dotenv    = require('dotenv');
+const cron      = require('node-cron');
 const connectDB = require('./config/db');
 const logger    = require('./utils/logger');
 
@@ -40,11 +43,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Parse JSON bodies
-app.use(express.json({ limit: '10mb' }));
+// Parse JSON bodies — increased limit to 50mb for face image Base64 data
+app.use(express.json({ limit: '50mb' }));
 
 // Parse URL-encoded bodies
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // ── Request Logger Middleware (logs every API hit) ─────────
 app.use((req, res, next) => {
@@ -105,6 +108,23 @@ app.use((err, req, res, next) => {
   });
 });
 
+// ── Auto-Checkout Cron Job (5:00 PM Daily — Office Closing) ──
+const { autoCheckOutAll } = require('./controllers/visitorController');
+
+// Schedule: "0 17 * * *" = Every day at 5:00 PM server time
+// If your server timezone differs from IST, adjust accordingly
+cron.schedule('0 17 * * *', async () => {
+  logger.custom('CRON', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', '\x1b[33m');
+  logger.custom('CRON', '⏰  5:00 PM — OFFICE CLOSING — Auto Checkout Triggered', '\x1b[33m');
+  logger.custom('CRON', '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', '\x1b[33m');
+
+  const result = await autoCheckOutAll();
+  
+  logger.custom('CRON', `Auto-checkout complete: ${result.count} visitor(s) checked out`, '\x1b[32m');
+}, {
+  timezone: 'Asia/Kolkata'  // IST timezone for 5 PM India time
+});
+
 // ── Start Server ──────────────────────────────────────────
 const startServer = async () => {
   // Connect to MongoDB first
@@ -112,6 +132,7 @@ const startServer = async () => {
 
   app.listen(PORT, () => {
     logger.serverStart(PORT);
+    logger.custom('CRON', '⏰ Auto-checkout cron scheduled: Every day at 5:00 PM IST', '\x1b[33m');
   });
 };
 

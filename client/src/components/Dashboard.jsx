@@ -12,9 +12,13 @@ import {
   FiPhone, 
   FiBriefcase, 
   FiX,
-  FiShield
+  FiShield,
+  FiCamera
 } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
+
+// ── Validation Regex ──────────────────────────────────────
+const PHONE_REGEX = /^\d{10}$/;
 
 const Dashboard = () => {
   const [visitors, setVisitors] = useState([]);
@@ -25,6 +29,7 @@ const Dashboard = () => {
   const [showWalkInModal, setShowWalkInModal] = useState(false);
   const [submittingWalkIn, setSubmittingWalkIn] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [walkInPhoneError, setWalkInPhoneError] = useState('');
 
   // Walk-in form state
   const [walkInForm, setWalkInForm] = useState({
@@ -33,6 +38,9 @@ const Dashboard = () => {
     purpose: '',
     hostName: ''
   });
+
+  // ── Face preview modal state ────────────────────────────
+  const [facePreview, setFacePreview] = useState(null);
 
   // Live clock tick
   useEffect(() => {
@@ -67,8 +75,27 @@ const Dashboard = () => {
     }
   };
 
+  // ── Walk-in phone handler (10 digits only) ──────────────
+  const handleWalkInPhoneChange = (value) => {
+    const digitsOnly = value.replace(/\D/g, '').slice(0, 10);
+    setWalkInForm(prev => ({ ...prev, phone: digitsOnly }));
+    
+    if (digitsOnly.length > 0 && digitsOnly.length !== 10) {
+      setWalkInPhoneError(`${digitsOnly.length}/10 digits`);
+    } else {
+      setWalkInPhoneError('');
+    }
+  };
+
   const handleWalkInSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate phone before submitting
+    if (!PHONE_REGEX.test(walkInForm.phone)) {
+      toast.error('Phone number must be exactly 10 numeric digits');
+      return;
+    }
+
     setSubmittingWalkIn(true);
     try {
       await API.post('/visitors/checkin', {
@@ -77,6 +104,7 @@ const Dashboard = () => {
       });
       toast.success(`Registered ${walkInForm.name} successfully!`);
       setWalkInForm({ name: '', phone: '', purpose: '', hostName: '' });
+      setWalkInPhoneError('');
       setShowWalkInModal(false);
       fetchVisitors();
     } catch (error) {
@@ -91,15 +119,18 @@ const Dashboard = () => {
       toast.error('No visitor logs to export');
       return;
     }
-    const headers = ['Name', 'Phone', 'Host', 'Purpose', 'Status', 'CheckInTime', 'CheckOutTime'];
+    const headers = ['Name', 'Phone', 'Email', 'Host', 'Purpose', 'Status', 'CheckOutMethod', 'CheckInTime', 'CheckOutTime', 'HasFaceImage'];
     const rows = visitors.map(v => [
       `"${v.name}"`,
       `"${v.phone}"`,
+      `"${v.email || ''}"`,
       `"${v.hostName}"`,
       `"${v.purpose}"`,
       `"${v.status}"`,
+      `"${v.checkOutMethod || 'N/A'}"`,
       `"${new Date(v.checkInTime).toLocaleString()}"`,
-      `"${v.checkOutTime ? new Date(v.checkOutTime).toLocaleString() : 'N/A'}"`
+      `"${v.checkOutTime ? new Date(v.checkOutTime).toLocaleString() : 'N/A'}"`,
+      `"${v.faceImage ? 'Yes' : 'No'}"`
     ]);
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
@@ -126,7 +157,8 @@ const Dashboard = () => {
         v.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         v.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         v.hostName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        v.purpose?.toLowerCase().includes(searchTerm.toLowerCase());
+        v.purpose?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        v.email?.toLowerCase().includes(searchTerm.toLowerCase());
 
       if (!matchesSearch) return false;
 
@@ -135,6 +167,18 @@ const Dashboard = () => {
       return true;
     });
   }, [visitors, searchTerm, filterStatus]);
+
+  // ── Checkout method badge helper ────────────────────────
+  const getCheckoutMethodBadge = (method) => {
+    switch(method) {
+      case 'auto':
+        return <span className="text-[9px] px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 border border-orange-500/20 font-mono">AUTO 5PM</span>;
+      case 'self':
+        return <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 border border-blue-500/20 font-mono">SELF</span>;
+      default:
+        return null;
+    }
+  };
 
   if (loading) {
     return (
@@ -394,9 +438,23 @@ const Dashboard = () => {
                     >
                       <td className="py-4 px-5">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-xs font-mono font-bold text-cyan-400 shrink-0">
-                            {initials}
-                          </div>
+                          {/* Face Image or Initials Avatar */}
+                          {visitor.faceImage ? (
+                            <button
+                              onClick={() => setFacePreview(visitor)}
+                              className="w-9 h-9 rounded-xl overflow-hidden border border-cyan-500/30 hover:border-cyan-500/60 transition-colors shrink-0 cursor-pointer relative group/face"
+                              title="View face ID"
+                            >
+                              <img src={visitor.faceImage} alt="Face" className="w-full h-full object-cover" />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/face:opacity-100 transition-opacity flex items-center justify-center">
+                                <FiCamera className="text-white text-xs" />
+                              </div>
+                            </button>
+                          ) : (
+                            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-xs font-mono font-bold text-cyan-400 shrink-0">
+                              {initials}
+                            </div>
+                          )}
                           <div>
                             <div className="font-semibold text-white group-hover:text-cyan-400 transition-colors">
                               {visitor.name}
@@ -441,10 +499,13 @@ const Dashboard = () => {
                             Checked In
                           </span>
                         ) : (
-                          <span className="badge badge-zinc">
-                            <FiCheckCircle className="text-emerald-400" />
-                            Checked Out
-                          </span>
+                          <div className="flex flex-col gap-1">
+                            <span className="badge badge-zinc">
+                              <FiCheckCircle className="text-emerald-400" />
+                              Checked Out
+                            </span>
+                            {getCheckoutMethodBadge(visitor.checkOutMethod)}
+                          </div>
                         )}
                       </td>
 
@@ -500,9 +561,19 @@ const Dashboard = () => {
                   {/* Top Row: Avatar + Name + Status */}
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-xs font-mono font-bold text-cyan-400 shrink-0">
-                        {initials}
-                      </div>
+                      {/* Face Image or Initials */}
+                      {visitor.faceImage ? (
+                        <button
+                          onClick={() => setFacePreview(visitor)}
+                          className="w-10 h-10 rounded-xl overflow-hidden border border-cyan-500/30 shrink-0 cursor-pointer"
+                        >
+                          <img src={visitor.faceImage} alt="Face" className="w-full h-full object-cover" />
+                        </button>
+                      ) : (
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-xs font-mono font-bold text-cyan-400 shrink-0">
+                          {initials}
+                        </div>
+                      )}
                       <div>
                         <h4 className="font-bold text-white text-sm leading-snug">{visitor.name}</h4>
                         <a
@@ -515,17 +586,20 @@ const Dashboard = () => {
                       </div>
                     </div>
 
-                    {visitor.status === 'Checked In' ? (
-                      <span className="badge badge-cyan text-[11px] shrink-0">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                        Active
-                      </span>
-                    ) : (
-                      <span className="badge badge-zinc text-[11px] shrink-0">
-                        <FiCheckCircle className="text-emerald-400" />
-                        Out
-                      </span>
-                    )}
+                    <div className="flex flex-col items-end gap-1">
+                      {visitor.status === 'Checked In' ? (
+                        <span className="badge badge-cyan text-[11px] shrink-0">
+                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                          Active
+                        </span>
+                      ) : (
+                        <span className="badge badge-zinc text-[11px] shrink-0">
+                          <FiCheckCircle className="text-emerald-400" />
+                          Out
+                        </span>
+                      )}
+                      {visitor.status === 'Checked Out' && getCheckoutMethodBadge(visitor.checkOutMethod)}
+                    </div>
                   </div>
 
                   {/* Details Pill Row */}
@@ -558,12 +632,48 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* ── Face Preview Modal ─────────────────────────────── */}
+      {facePreview && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in"
+          onClick={() => setFacePreview(null)}
+        >
+          <div 
+            className="card max-w-sm w-full border border-white/[0.12] shadow-2xl p-6 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setFacePreview(null)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-white/[0.08]"
+            >
+              <FiX size={18} />
+            </button>
+
+            <div className="w-32 h-32 rounded-2xl overflow-hidden mx-auto mb-4 border-2 border-cyan-500/30 shadow-lg shadow-cyan-500/10">
+              <img src={facePreview.faceImage} alt="Face ID" className="w-full h-full object-cover" />
+            </div>
+
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-mono text-cyan-400 mb-2">
+              <FiCamera className="text-[9px]" /> FACE ID CAPTURE
+            </div>
+
+            <h3 className="text-lg font-bold text-white">{facePreview.name}</h3>
+            <p className="text-xs text-zinc-400 font-mono mt-1">
+              Phone: {facePreview.phone} • Host: @{facePreview.hostName}
+            </p>
+            <p className="text-xs text-zinc-500 mt-1">
+              Checked in: {new Date(facePreview.checkInTime).toLocaleString()}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Walk-in Modal */}
       {showWalkInModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md animate-fade-in">
           <div className="card w-full max-w-lg max-h-[92vh] overflow-y-auto border border-white/[0.12] shadow-2xl relative p-5 sm:p-6">
             <button
-              onClick={() => setShowWalkInModal(false)}
+              onClick={() => { setShowWalkInModal(false); setWalkInPhoneError(''); }}
               className="absolute top-5 right-5 text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-white/[0.08]"
             >
               <FiX size={20} />
@@ -596,16 +706,24 @@ const Dashboard = () => {
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                  Phone Number *
+                  Phone Number (10 Digits) *
                 </label>
                 <input
                   type="tel"
                   required
                   value={walkInForm.phone}
-                  onChange={(e) => setWalkInForm({ ...walkInForm, phone: e.target.value })}
-                  placeholder="e.g. +1 (555) 234-5678"
-                  className="input-field text-sm"
+                  onChange={(e) => handleWalkInPhoneChange(e.target.value)}
+                  placeholder="e.g. 9876543210"
+                  maxLength={10}
+                  inputMode="numeric"
+                  pattern="\d{10}"
+                  className={`input-field text-sm font-mono ${
+                    walkInPhoneError ? '!border-red-500/50' : ''
+                  }`}
                 />
+                {walkInPhoneError && (
+                  <p className="text-[11px] text-orange-400 mt-1 font-mono">{walkInPhoneError}</p>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -641,7 +759,7 @@ const Dashboard = () => {
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/[0.08]">
                 <button
                   type="button"
-                  onClick={() => setShowWalkInModal(false)}
+                  onClick={() => { setShowWalkInModal(false); setWalkInPhoneError(''); }}
                   className="btn-secondary text-sm"
                 >
                   Cancel

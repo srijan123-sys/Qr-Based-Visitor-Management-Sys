@@ -9,6 +9,9 @@ import { FiShield } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import API from '../api/axios.js';
 
+// ── Email Regex (same as backend) ─────────────────────────
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 export default function Login({ onLogin }) {
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -21,6 +24,12 @@ export default function Login({ onLogin }) {
     e.preventDefault();
     if (!form.email || !form.password) {
       toast.error('Please fill in all fields');
+      return;
+    }
+
+    // Email regex validation
+    if (!EMAIL_REGEX.test(form.email.trim())) {
+      toast.error('Please enter a valid email address');
       return;
     }
 

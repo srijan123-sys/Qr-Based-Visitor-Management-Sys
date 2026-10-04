@@ -4,11 +4,12 @@
 
 const express = require('express');
 const router = express.Router();
-const { registerVisitor, getVisitors, checkOutVisitor } = require('../controllers/visitorController');
+const { registerVisitor, getVisitors, checkOutVisitor, selfCheckOut } = require('../controllers/visitorController');
 const { protect } = require('../middleware/authMiddleware');
 
-// Public route for visitors scanning the QR code
+// Public routes (visitors scanning QR code — no auth needed)
 router.post('/checkin', registerVisitor);
+router.put('/checkout-self/:id', selfCheckOut);     // Visitor self-checkout
 
 // Protected routes for the Admin Dashboard
 router.get('/', protect, getVisitors);

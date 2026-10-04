@@ -13,6 +13,9 @@ import { FiShield } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import API from '../api/axios.js';
 
+// ── Email Regex (same as backend) ─────────────────────────
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 export default function Signup({ onLogin }) {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -29,6 +32,12 @@ export default function Signup({ onLogin }) {
     }
     if (form.password.length < 6) {
       toast.error('Password must be at least 6 characters');
+      return;
+    }
+
+    // Email regex validation
+    if (!EMAIL_REGEX.test(form.email.trim())) {
+      toast.error('Please enter a valid email address (e.g. user@example.com)');
       return;
     }
 
