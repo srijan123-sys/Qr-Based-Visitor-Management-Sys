@@ -706,7 +706,7 @@ const Dashboard = () => {
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                  Phone Number (10 Digits) *
+                  Phone Number *
                 </label>
                 <input
                   type="tel"

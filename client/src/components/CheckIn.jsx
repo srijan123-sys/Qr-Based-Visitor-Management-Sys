@@ -78,7 +78,7 @@ const CheckIn = () => {
   const startCamera = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: 480, height: 480 }
+        video: { facingMode: 'user' }
       });
       streamRef.current = stream;
       if (videoRef.current) {
@@ -416,7 +416,7 @@ const CheckIn = () => {
           {/* Phone Number — 10 digits only */}
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-              Phone Number (10 Digits) *
+              Phone Number *
             </label>
             <div className="relative">
               <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
