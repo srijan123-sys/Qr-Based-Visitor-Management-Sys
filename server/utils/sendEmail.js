@@ -1,26 +1,36 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
-  // Create transporter
+  // 1. Generate a temporary fake email account on the fly using Ethereal
+  const testAccount = await nodemailer.createTestAccount();
+
+  // 2. Create transporter using the fake Ethereal account
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false, 
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS, // App Password
+      user: testAccount.user, 
+      pass: testAccount.pass, 
     },
   });
 
-  // Define email options
+  // 3. Define email options
   const mailOptions = {
-    from: `"QR-Pass Admin" <${process.env.EMAIL_USER}>`,
+    from: '"QR-Pass Admin" <admin@qr-pass.local>',
     to: options.email,
     subject: options.subject,
     text: options.message,
-    html: options.html,
   };
 
-  // Send email
-  await transporter.sendMail(mailOptions);
+  // 4. Send email
+  const info = await transporter.sendMail(mailOptions);
+
+  // 5. Get the URL to view the fake email online
+  const previewUrl = nodemailer.getTestMessageUrl(info);
+  
+  // Return it so the controller can send it to the frontend!
+  return previewUrl;
 };
 
 module.exports = sendEmail;

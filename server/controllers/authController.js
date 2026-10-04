@@ -149,26 +149,29 @@ const forgotPassword = async (req, res) => {
     `;
 
     try {
-      // Print it to the terminal no matter what (Great for Demo/College Project)
-      logger.custom('FORGOT PASSWORD', `\n\n======================================================\n🔑 PASSWORD RESET LINK GENERATED 🔑\nUser: ${user.email}\nLink: ${resetUrl}\n======================================================\n`, '\x1b[33m');
+      // Send email using Ethereal (Zero Setup!)
+      const previewUrl = await sendEmail({
+        email: user.email,
+        subject: 'Password Reset Request — QR-Pass',
+        message,
+      });
 
-      // Attempt to send real email if credentials exist
-      if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-        await sendEmail({
-          email: user.email,
-          subject: 'Password Reset Request — QR-Pass',
-          message,
-        });
-        return res.status(200).json({ success: true, message: 'Reset link sent to email (also in terminal)' });
-      } else {
-        // If no credentials, just pretend it succeeded (Demo mode)
-        return res.status(200).json({ success: true, message: 'Demo Mode: Reset link printed in server terminal!' });
-      }
+      // Also log it just in case
+      logger.custom('ETHEREAL EMAIL', `Fake Email Sent! View it here: ${previewUrl}`, '\x1b[36m');
+
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Email sent via Ethereal!',
+        previewUrl // Send URL to frontend
+      });
 
     } catch (err) {
-      // If email fails, STILL allow them to reset via the terminal link
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;
+      await user.save({ validateBeforeSave: false });
+
       logger.error('EMAIL SEND FAILED', err);
-      return res.status(200).json({ success: true, message: 'Email failed, but link is in terminal.' });
+      return res.status(500).json({ success: false, message: 'Email could not be sent' });
     }
   } catch (err) {
     logger.error('FORGOT PASSWORD', err);
