@@ -31,6 +31,11 @@ const updateUserRole = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // FINAL BOSS IMMUNITY 👑
+    if (user.email === 'thewisdom620@gmail.com') {
+      return res.status(403).json({ message: 'Permission Denied: You cannot modify the Final Boss.' });
+    }
+
     user.role = role;
     await user.save();
 
@@ -55,6 +60,11 @@ const deleteUser = async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+
+    // FINAL BOSS IMMUNITY 👑
+    if (user.email === 'thewisdom620@gmail.com') {
+      return res.status(403).json({ message: 'Permission Denied: You cannot delete the Final Boss.' });
     }
 
     await User.findByIdAndDelete(req.params.id);

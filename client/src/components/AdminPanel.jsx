@@ -78,11 +78,14 @@ const AdminPanel = ({ user: currentUser }) => {
             </thead>
             <tbody className="divide-y divide-white/[0.04] text-sm">
               {users.map(u => (
-                <tr key={u._id} className="hover:bg-white/[0.02] transition-colors">
+                <tr key={u._id} className={`transition-colors ${u.email === 'thewisdom620@gmail.com' ? 'bg-amber-500/5' : 'hover:bg-white/[0.02]'}`}>
                   <td className="py-3 px-4 text-white font-medium">
                     {u.name}
                     {u._id === currentUser._id && (
                       <span className="ml-2 text-[10px] bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded uppercase font-mono">You</span>
+                    )}
+                    {u.email === 'thewisdom620@gmail.com' && (
+                      <span className="ml-2 text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">👑 Final Boss</span>
                     )}
                   </td>
                   <td className="py-3 px-4 text-zinc-400 font-mono text-xs">{u.email}</td>
@@ -90,12 +93,12 @@ const AdminPanel = ({ user: currentUser }) => {
                     <select
                       value={u.role}
                       onChange={(e) => handleRoleChange(u._id, e.target.value)}
-                      disabled={u._id === currentUser._id}
+                      disabled={u._id === currentUser._id || u.email === 'thewisdom620@gmail.com'}
                       className={`text-xs font-semibold px-2 py-1 rounded outline-none cursor-pointer ${
                         u.role === 'admin' 
                           ? 'bg-red-500/20 text-red-400 border border-red-500/30' 
                           : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
-                      } ${u._id === currentUser._id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      } ${(u._id === currentUser._id || u.email === 'thewisdom620@gmail.com') ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       <option value="admin">Admin (Full Power)</option>
                       <option value="receptionist">Receptionist (Limited)</option>
@@ -105,13 +108,13 @@ const AdminPanel = ({ user: currentUser }) => {
                   <td className="py-3 px-4 text-right">
                     <button
                       onClick={() => handleDelete(u._id, u.email)}
-                      disabled={u._id === currentUser._id}
+                      disabled={u._id === currentUser._id || u.email === 'thewisdom620@gmail.com'}
                       className={`p-2 rounded-lg transition-colors ${
-                        u._id === currentUser._id
+                        (u._id === currentUser._id || u.email === 'thewisdom620@gmail.com')
                           ? 'text-zinc-600 cursor-not-allowed'
                           : 'text-zinc-400 hover:bg-red-500/20 hover:text-red-400'
                       }`}
-                      title={u._id === currentUser._id ? "You cannot delete yourself" : "Delete User"}
+                      title={(u._id === currentUser._id || u.email === 'thewisdom620@gmail.com') ? "Cannot delete this user" : "Delete User"}
                     >
                       <FiTrash2 />
                     </button>
