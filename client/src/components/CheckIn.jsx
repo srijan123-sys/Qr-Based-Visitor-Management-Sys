@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import API from '../api/axios.js';
 import { toast } from 'react-hot-toast';
@@ -81,15 +81,19 @@ const CheckIn = () => {
         video: { facingMode: 'user' }
       });
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
       setCameraActive(true);
     } catch (err) {
       console.error('Camera access denied:', err);
       toast.error('Camera access denied. Please allow camera permissions to capture your face.');
     }
   }, []);
+
+  // ── Attach stream to video when active ──────────────────
+  useEffect(() => {
+    if (cameraActive && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  }, [cameraActive]);
 
   // ── Camera: Capture snapshot ────────────────────────────
   const capturePhoto = useCallback(() => {
