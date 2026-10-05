@@ -123,10 +123,10 @@ function App() {
             <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--canvas)' }}>
               
               {/* ── Middle Area (Sidebar + Scrollable Main) ── */}
-              <div style={{ display: 'flex', flex: 1 }}>
+              <div style={{ display: 'flex', flex: 1, minWidth: 0 }}>
                 <Sidebar user={user} onLogout={handleLogout} />
-                <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ flex: 1, flexShrink: 0 }} className="content-wrapper">
+                <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                  <div style={{ flex: 1, flexShrink: 0, minWidth: 0 }} className="content-wrapper">
                     <Routes>
                       <Route path="/" element={<Dashboard user={user} />} />
                       <Route path="/dashboard" element={<Dashboard user={user} />} />
@@ -225,9 +225,8 @@ function App() {
                 @media (max-width: 767px) {
                   #desktop-sidebar { display: none !important; }
                   #mobile-header { display: flex !important; }
-                  #mobile-bottomnav { display: flex !important; }
                   .content-wrapper { padding: 84px 16px 32px 16px !important; }
-                  .app-footer { padding-bottom: 80px !important; flex-direction: column !important; text-align: center !important; gap: 12px; }
+                  .app-footer { flex-direction: column !important; text-align: center !important; gap: 12px; }
                   .app-footer > div { text-align: center !important; }
                 }
               `}</style>

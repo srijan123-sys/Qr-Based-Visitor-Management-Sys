@@ -253,28 +253,6 @@ const Sidebar = ({ user, onLogout }) => {
         {renderContent(true, () => setMobileOpen(false))}
       </div>
 
-      <nav id="mobile-bottomnav" style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40,
-        alignItems: 'center', justifyContent: 'space-around', padding: '8px 0',
-        background: 'var(--canvas)', borderTop: '1px solid var(--hairline)', display: 'none',
-      }}>
-        {items.map(({ to, label, icon: Icon, live }) => (
-          <NavLink
-            key={to} to={to}
-            style={({ isActive }) => ({
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '4px 12px',
-              borderRadius: 6, fontSize: 10, fontWeight: 500, fontFamily: 'var(--font-sans)',
-              color: isActive ? 'var(--ink)' : 'var(--mute)', textDecoration: 'none',
-            })}
-          >
-            <div style={{ position: 'relative' }}>
-              <Icon size={18} />
-              {live && <span style={{ position: 'absolute', top: -2, right: -2, width: 5, height: 5, borderRadius: '50%', background: '#0070f3' }} />}
-            </div>
-            <span>{label}</span>
-          </NavLink>
-        ))}
-      </nav>
     </>
   );
 };
