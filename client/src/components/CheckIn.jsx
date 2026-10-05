@@ -59,6 +59,14 @@ const CheckIn = () => {
     }
   };
 
+  const stopCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setCameraActive(false);
+  }, []);
+
   const startCamera = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
@@ -91,15 +99,7 @@ const CheckIn = () => {
     setFaceImage(canvas.toDataURL('image/jpeg', 0.7));
     stopCamera();
     toast.success('Face photo captured!');
-  }, []);
-
-  const stopCamera = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-    setCameraActive(false);
-  }, []);
+  }, [stopCamera]);
 
   const retakePhoto = useCallback(() => {
     setFaceImage(null);
