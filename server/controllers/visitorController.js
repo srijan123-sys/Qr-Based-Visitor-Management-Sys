@@ -5,6 +5,7 @@
 const Visitor = require('../models/Visitor');
 const cloudinary = require('../config/cloudinary');
 const logger = require('../utils/logger');
+const { sendCheckInNotification, sendCheckOutNotification } = require('../utils/notifier');
 
 // ── Validation Helpers (Regex-based as sir suggested) ─────────
 const PHONE_REGEX = /^\d{10}$/;
@@ -60,6 +61,9 @@ const registerVisitor = async (req, res) => {
       receptionQrId,
       faceImage: uploadedImageUrl || faceImage // Use URL if uploaded, fallback to base64 or empty
     });
+
+    // Trigger async notifications
+    sendCheckInNotification(visitor).catch(err => logger.error('Notification error:', err));
 
     logger.custom('VISITOR', `New Check-In: ${name} (Host: ${hostName})`, '\x1b[36m');
     if (faceImage) {
@@ -131,6 +135,9 @@ const checkOutVisitor = async (req, res) => {
     
     await visitor.save();
 
+    // Trigger async notifications
+    sendCheckOutNotification(visitor).catch(err => logger.error('Notification error:', err));
+
     logger.custom('VISITOR', `Checked Out: ${visitor.name} (Manual)`, '\x1b[35m');
 
     res.status(200).json(visitor);
@@ -160,6 +167,9 @@ const selfCheckOut = async (req, res) => {
     visitor.checkOutMethod = 'self';
 
     await visitor.save();
+
+    // Trigger async notifications
+    sendCheckOutNotification(visitor).catch(err => logger.error('Notification error:', err));
 
     logger.custom('VISITOR', `Self-Checkout: ${visitor.name} ✓`, '\x1b[33m');
 
@@ -209,11 +219,62 @@ const autoCheckOutAll = async () => {
   }
 };
 
+// @desc    Delete a visitor log
+// @route   DELETE /api/visitors/:id
+// @access  Protected (Admin only)
+const deleteVisitor = async (req, res) => {
+  try {
+    const visitor = await Visitor.findById(req.params.id);
+    if (!visitor) {
+      return res.status(404).json({ message: 'Visitor not found' });
+    }
+    
+    await Visitor.findByIdAndDelete(req.params.id);
+    logger.custom('VISITOR', `Deleted Visitor Record: ${visitor.name}`, '\x1b[31m');
+    
+    res.json({ success: true, message: 'Visitor record deleted' });
+  } catch (error) {
+    logger.error('Error deleting visitor:', error);
+    res.status(500).json({ message: 'Server error during deletion' });
+  }
+};
+
+// @desc    Edit a visitor log
+// @route   PUT /api/visitors/:id
+// @access  Protected (Admin only)
+const editVisitor = async (req, res) => {
+  try {
+    const { name, phone, email, purpose, hostName } = req.body;
+    
+    const visitor = await Visitor.findById(req.params.id);
+    if (!visitor) {
+      return res.status(404).json({ message: 'Visitor not found' });
+    }
+    
+    // Update fields
+    if (name) visitor.name = name.trim();
+    if (phone) visitor.phone = phone;
+    if (email) visitor.email = email.trim().toLowerCase();
+    if (purpose) visitor.purpose = purpose;
+    if (hostName) visitor.hostName = hostName.trim();
+    
+    const updatedVisitor = await visitor.save();
+    logger.custom('VISITOR', `Edited Visitor Record: ${updatedVisitor.name}`, '\x1b[33m');
+    
+    res.json({ success: true, data: updatedVisitor, message: 'Visitor record updated' });
+  } catch (error) {
+    logger.error('Error updating visitor:', error);
+    res.status(500).json({ message: 'Server error during update' });
+  }
+};
+
 module.exports = {
   registerVisitor,
   getVisitors,
   getMyVisitors,
   checkOutVisitor,
   selfCheckOut,
-  autoCheckOutAll
+  autoCheckOutAll,
+  deleteVisitor,
+  editVisitor
 };

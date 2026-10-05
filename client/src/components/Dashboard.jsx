@@ -16,8 +16,9 @@ import {
   FiPhone, 
   FiBriefcase, 
   FiX,
-  FiShield,
-  FiCamera
+  FiCamera,
+  FiEdit2,
+  FiTrash2
 } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
@@ -131,6 +132,42 @@ const Dashboard = ({ user }) => {
     toast.success('Visitor log exported');
   };
 
+  // ADMIN ONLY ACTIONS
+  const [editingVisitor, setEditingVisitor] = useState(null);
+
+  const handleDeleteVisitor = async (id, name) => {
+    if (user?.role !== 'admin') return;
+    if (!window.confirm(`Are you sure you want to completely delete the record for ${name}?`)) return;
+    try {
+      await API.delete(`/api/visitors/${id}`);
+      toast.success(`${name} deleted permanently`);
+      fetchVisitors();
+    } catch (err) {
+      toast.error('Failed to delete visitor');
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (user?.role !== 'admin') return;
+    try {
+      await API.put(`/api/visitors/${editingVisitor._id}`, {
+        name: editingVisitor.name,
+        phone: editingVisitor.phone,
+        email: editingVisitor.email,
+        purpose: editingVisitor.purpose,
+        hostName: editingVisitor.hostName
+      });
+      toast.success('Visitor updated successfully');
+      setEditingVisitor(null);
+      fetchVisitors();
+    } catch (err) {
+      toast.error('Failed to update visitor');
+    }
+  };
+
+
+
   const activeVisitors = visitors.filter(v => v.status === 'Checked In');
   const checkedOutVisitors = visitors.filter(v => v.status === 'Checked Out');
   const totalToday = visitors.filter(v => new Date(v.checkInTime).toDateString() === new Date().toDateString());
@@ -226,9 +263,11 @@ const Dashboard = ({ user }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, background: 'var(--canvas-panel)', border: '1px solid var(--hairline)', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--mute)' }}>
             <FiClock /> {currentTime.toLocaleTimeString()}
           </div>
-          <button onClick={() => setShowWalkInModal(true)} className="btn-primary" style={{ height: 32 }}>
-            <FiUserPlus /> Walk-in
-          </button>
+          {user?.role === 'admin' && (
+            <button onClick={() => setShowWalkInModal(true)} className="btn-primary" style={{ height: 32 }}>
+              <FiUserPlus /> Walk-in
+            </button>
+          )}
           <button onClick={exportCSV} className="btn-secondary" style={{ height: 32 }}>
             <FiDownload /> Export
           </button>
@@ -384,15 +423,27 @@ const Dashboard = ({ user }) => {
                       )}
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      {v.status === 'Checked In' ? (
-                        <button onClick={() => handleCheckOut(v._id, v.name)} className="btn-secondary" style={{ height: 28, fontSize: 11 }}>
-                          Check Out
-                        </button>
-                      ) : (
-                        <div style={{ fontSize: 11, color: 'var(--mute)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
-                          <FiCheckCircle /> Out {new Date(v.checkOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </div>
-                      )}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
+                        {v.status === 'Checked In' ? (
+                          <button onClick={() => handleCheckOut(v._id, v.name)} className="btn-secondary" style={{ height: 28, fontSize: 11 }}>
+                            Check Out
+                          </button>
+                        ) : (
+                          <div style={{ fontSize: 11, color: 'var(--mute)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <FiCheckCircle /> Out {new Date(v.checkOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        )}
+                        {user?.role === 'admin' && (
+                          <div style={{ display: 'flex', gap: 4, marginLeft: 8, paddingLeft: 8, borderLeft: '1px solid var(--hairline)' }}>
+                            <button onClick={() => setEditingVisitor(v)} title="Edit Visitor" className="btn-ghost-sm" style={{ padding: 4, height: 28, width: 28, color: 'var(--mute)' }}>
+                              <FiEdit2 size={14} />
+                            </button>
+                            <button onClick={() => handleDeleteVisitor(v._id, v.name)} title="Delete Visitor" className="btn-ghost-sm" style={{ padding: 4, height: 28, width: 28, color: 'var(--danger)' }}>
+                              <FiTrash2 size={14} />
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -461,6 +512,55 @@ const Dashboard = ({ user }) => {
                 <button type="submit" disabled={submittingWalkIn} className="btn-primary">
                   {submittingWalkIn ? 'Registering...' : 'Complete Check-In'}
                 </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal (Admin Only) */}
+      {editingVisitor && user?.role === 'admin' && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', padding: 16 }}>
+          <div className="card animate-fade-in" style={{ width: '100%', maxWidth: 480, maxHeight: '90vh', overflowY: 'auto', position: 'relative', padding: 32 }}>
+            <button onClick={() => setEditingVisitor(null)} style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', color: 'var(--mute)', cursor: 'pointer' }}>
+              <FiX size={18} />
+            </button>
+            
+            <div style={{ marginBottom: 24 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--ink)' }}>Edit Visitor</h2>
+              <p style={{ fontSize: 13, color: 'var(--mute)' }}>Modify visitor log details</p>
+            </div>
+
+            <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)', marginBottom: 6 }}>Full Name</label>
+                <input type="text" required value={editingVisitor.name} onChange={e => setEditingVisitor({ ...editingVisitor, name: e.target.value })} className="input-field" />
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)', marginBottom: 6 }}>Phone Number</label>
+                <input type="tel" required value={editingVisitor.phone} onChange={e => setEditingVisitor({ ...editingVisitor, phone: e.target.value.replace(/\D/g, '') })} maxLength={10} className="input-field" style={{ fontFamily: 'var(--font-mono)' }} />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)', marginBottom: 6 }}>Email</label>
+                <input type="email" value={editingVisitor.email || ''} onChange={e => setEditingVisitor({ ...editingVisitor, email: e.target.value })} className="input-field" />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)', marginBottom: 6 }}>Host</label>
+                  <input type="text" required value={editingVisitor.hostName} onChange={e => setEditingVisitor({ ...editingVisitor, hostName: e.target.value })} className="input-field" />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)', marginBottom: 6 }}>Purpose</label>
+                  <input type="text" required value={editingVisitor.purpose} onChange={e => setEditingVisitor({ ...editingVisitor, purpose: e.target.value })} className="input-field" />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--hairline)' }}>
+                <button type="button" onClick={() => setEditingVisitor(null)} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">Save Changes</button>
               </div>
             </form>
           </div>
