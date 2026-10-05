@@ -120,12 +120,12 @@ function App() {
         <Routes>
           <Route path="/checkin/:qrId" element={<CheckIn />} />
           <Route path="*" element={
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: 'var(--canvas)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--canvas)' }}>
               
               {/* ── Middle Area (Sidebar + Scrollable Main) ── */}
-              <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+              <div style={{ display: 'flex', flex: 1 }}>
                 <Sidebar user={user} onLogout={handleLogout} />
-                <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+                <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                   <div style={{ flex: 1, flexShrink: 0 }} className="content-wrapper">
                     <Routes>
                       <Route path="/" element={<Dashboard user={user} />} />
@@ -151,7 +151,7 @@ function App() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                               <div>
                                 <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--mute)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Name</label>
-                                <input id="settings-name-input" type="text" className="input-field" defaultValue={user?.name || ''} placeholder="Your Name" />
+                                <input id="settings-name-input" type="text" className="input-field" defaultValue={user?.name || ''} placeholder="Your Name" onKeyDown={(e) => e.key === 'Enter' && handleUpdateProfile()} />
                               </div>
                               <div>
                                 <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--mute)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email Address</label>
@@ -217,7 +217,7 @@ function App() {
               {/* ── Desktop Sidebar (md+) visible via CSS ─────────────────── */}
               <style>{`
                 @media (min-width: 768px) {
-                  #desktop-sidebar { display: flex !important; flex-direction: column; height: 100%; width: 240px; z-index: 50; background: var(--canvas); border-right: 1px solid var(--hairline); flex-shrink: 0; }
+                  #desktop-sidebar { display: flex !important; flex-direction: column; position: sticky; top: 0; align-self: flex-start; height: 100vh; width: 240px; z-index: 50; background: var(--canvas); border-right: 1px solid var(--hairline); flex-shrink: 0; }
                   #mobile-header { display: none !important; }
                   #mobile-bottomnav { display: none !important; }
                   .content-wrapper { padding: 48px 32px 32px 32px !important; }
