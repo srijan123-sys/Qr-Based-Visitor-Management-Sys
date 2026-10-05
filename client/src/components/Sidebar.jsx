@@ -33,11 +33,15 @@ const Sidebar = ({ user, onLogout }) => {
   const { theme, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const userMenuRef = useRef(null);
+  const desktopMenuRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+      const desktopContains = desktopMenuRef.current && desktopMenuRef.current.contains(e.target);
+      const mobileContains = mobileMenuRef.current && mobileMenuRef.current.contains(e.target);
+      
+      if (!desktopContains && !mobileContains) {
         setUserMenuOpen(false);
       }
     };
@@ -116,7 +120,7 @@ const Sidebar = ({ user, onLogout }) => {
       </nav>
 
       {/* Footer User Profile Menu */}
-      <div style={{ padding: '12px 8px', borderTop: '1px solid var(--hairline)', position: 'relative' }} ref={isMobile ? null : userMenuRef}>
+      <div style={{ padding: '12px 8px', borderTop: '1px solid var(--hairline)', position: 'relative' }} ref={isMobile ? mobileMenuRef : desktopMenuRef}>
         
         {/* Popover Menu */}
         {userMenuOpen && (
@@ -221,6 +225,9 @@ const Sidebar = ({ user, onLogout }) => {
         display: 'none',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button className="btn-ghost-sm" onClick={() => setMobileOpen(true)} style={{ padding: '0 8px', marginLeft: -8, marginRight: 4 }}>
+            <FiMenu size={18} />
+          </button>
           <div style={{ width: 28, height: 28, borderRadius: 7, background: 'linear-gradient(135deg, #007cf0, #7928ca)', padding: '1.5px' }}>
             <div style={{ width: '100%', height: '100%', background: 'var(--canvas)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <HiOutlineQrcode style={{ color: 'var(--ink)', fontSize: 14 }} />
@@ -229,9 +236,7 @@ const Sidebar = ({ user, onLogout }) => {
           <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>QR-Pass</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button className="btn-ghost-sm" onClick={() => setMobileOpen(true)} style={{ padding: '0 8px' }}>
-            <FiMenu size={15} />
-          </button>
+          {/* Right side placeholder */}
         </div>
       </header>
 
