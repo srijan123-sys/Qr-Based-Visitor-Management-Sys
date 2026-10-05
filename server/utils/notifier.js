@@ -39,10 +39,11 @@ const sendCheckInNotification = async (visitor) => {
   if (visitor.phone && twilioClient && process.env.TWILIO_WHATSAPP_NUMBER) {
     try {
       // In WhatsApp, the number must include the country code e.g. +91
-      const formattedPhone = visitor.phone.startsWith('+') ? visitor.phone : `+91${visitor.phone}`;
+      const formattedPhone = (visitor.phone.startsWith('+') ? visitor.phone : `+91${visitor.phone}`).replace(/\s+/g, '');
+      const fromNumber = process.env.TWILIO_WHATSAPP_NUMBER.replace(/\s+/g, '');
       await twilioClient.messages.create({
         body: message,
-        from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
+        from: `whatsapp:${fromNumber}`,
         to: `whatsapp:${formattedPhone}`
       });
       logger.info(`Check-in WhatsApp sent to ${formattedPhone}`);
@@ -73,10 +74,11 @@ const sendCheckOutNotification = async (visitor) => {
   // 2. Send WhatsApp if Twilio is configured
   if (visitor.phone && twilioClient && process.env.TWILIO_WHATSAPP_NUMBER) {
     try {
-      const formattedPhone = visitor.phone.startsWith('+') ? visitor.phone : `+91${visitor.phone}`;
+      const formattedPhone = (visitor.phone.startsWith('+') ? visitor.phone : `+91${visitor.phone}`).replace(/\s+/g, '');
+      const fromNumber = process.env.TWILIO_WHATSAPP_NUMBER.replace(/\s+/g, '');
       await twilioClient.messages.create({
         body: message,
-        from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
+        from: `whatsapp:${fromNumber}`,
         to: `whatsapp:${formattedPhone}`
       });
       logger.info(`Check-out WhatsApp sent to ${formattedPhone}`);
