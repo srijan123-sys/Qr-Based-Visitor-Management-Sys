@@ -196,25 +196,22 @@ function App() {
               {/* ── Footer ──────────────────────────────────────────────────────── */}
               <footer style={{
                 flexShrink: 0,
-                padding: '16px 24px',
+                padding: '20px 24px',
                 borderTop: '1px solid var(--hairline)',
                 textAlign: 'center',
                 fontFamily: 'var(--font-mono)',
                 fontSize: 11,
                 color: 'var(--mute)',
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                justifyContent: 'center',
+                gap: 6,
                 background: 'var(--canvas-panel)'
               }} className="app-footer">
-                <div style={{ textAlign: 'left' }}>
-                  <p>QR Based Visitor Management System • Sigma University</p>
-                  <p style={{ marginTop: 2 }}>Made by Srijan, Daxesh, Vaibhav, and Mayur</p>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <p>QR-Pass Core v1.0.0 &copy; {new Date().getFullYear()}</p>
-                  <p style={{ marginTop: 2 }}>All rights reserved.</p>
-                </div>
+                <p>QR Based Visitor Management System • Sigma University</p>
+                <p>Made by Srijan, Daxesh, Vaibhav, and Mayur</p>
+                <p>QR-Pass Core v1.0.0 &copy; {new Date().getFullYear()} — All rights reserved.</p>
               </footer>
 
               {/* ── Desktop Sidebar (md+) visible via CSS ─────────────────── */}
