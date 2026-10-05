@@ -192,7 +192,7 @@ function App() {
               {/* ── Desktop Sidebar (md+) visible via CSS ─────────────────── */}
               <style>{`
                 @media (min-width: 768px) {
-                  #desktop-sidebar { display: flex !important; position: sticky; top: 0; height: 100vh; width: 240px; z-index: 50; }
+                  #desktop-sidebar { display: block !important; position: sticky; top: 0; align-self: flex-start; height: 100vh; width: 240px; z-index: 50; background: var(--canvas); border-right: 1px solid var(--hairline); }
                   #mobile-header { display: none !important; }
                   #mobile-bottomnav { display: none !important; }
                   .content-wrapper { padding: 48px 32px 32px 32px !important; }
