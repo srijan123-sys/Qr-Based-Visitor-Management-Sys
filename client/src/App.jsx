@@ -101,15 +101,7 @@ function App() {
           <Route path="*" element={
             <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--canvas)' }}>
               <Sidebar user={user} onLogout={handleLogout} />
-              <main style={{
-                flex: 1,
-                overflowY: 'auto',
-                padding: '32px',
-                minHeight: '100vh',
-                paddingBottom: '80px',
-              }}
-              className="main-content"
-              >
+              <main className="main-content" style={{ flex: 1, minHeight: '100vh' }}>
                 <Routes>
                   <Route path="/" element={<Dashboard user={user} />} />
                   <Route path="/dashboard" element={<Dashboard user={user} />} />
@@ -127,6 +119,22 @@ function App() {
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </main>
+
+              {/* ── Desktop Sidebar (md+) visible via CSS ─────────────────── */}
+              <style>{`
+                @media (min-width: 768px) {
+                  #desktop-sidebar { display: flex !important; position: fixed; top: 0; left: 0; bottom: 0; width: 240px; }
+                  #mobile-header { display: none !important; }
+                  #mobile-bottomnav { display: none !important; }
+                  .main-content { margin-left: 240px; padding: 48px 32px 80px 32px !important; }
+                }
+                @media (max-width: 767px) {
+                  #desktop-sidebar { display: none !important; }
+                  #mobile-header { display: flex !important; }
+                  #mobile-bottomnav { display: flex !important; }
+                  .main-content { margin-left: 0; padding: 20px 16px 80px 16px !important; padding-top: 72px !important; }
+                }
+              `}</style>
             </div>
           } />
         </Routes>
