@@ -139,7 +139,7 @@ const Dashboard = ({ user }) => {
     if (user?.role !== 'admin') return;
     if (!window.confirm(`Are you sure you want to completely delete the record for ${name}?`)) return;
     try {
-      await API.delete(`/api/visitors/${id}`);
+      await API.delete(`/visitors/${id}`);
       toast.success(`${name} deleted permanently`);
       fetchVisitors();
     } catch (err) {
@@ -151,7 +151,7 @@ const Dashboard = ({ user }) => {
     e.preventDefault();
     if (user?.role !== 'admin') return;
     try {
-      await API.put(`/api/visitors/${editingVisitor._id}`, {
+      await API.put(`/visitors/${editingVisitor._id}`, {
         name: editingVisitor.name,
         phone: editingVisitor.phone,
         email: editingVisitor.email,
