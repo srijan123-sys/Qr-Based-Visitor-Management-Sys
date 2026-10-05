@@ -23,7 +23,6 @@ const navItems = (user) => {
   if (user?.role === 'admin') {
     items.push({ to: '/users', label: 'Manage Users', icon: FiShield });
   }
-  items.push({ to: '/settings', label: 'Settings', icon: FiSettings });
   items.push({ to: '/about', label: 'About QR-MS', icon: FiInfo });
 
   return items;
