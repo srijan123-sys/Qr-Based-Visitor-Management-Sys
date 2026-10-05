@@ -99,12 +99,13 @@ function App() {
         <Routes>
           <Route path="/checkin/:qrId" element={<CheckIn />} />
           <Route path="*" element={
-            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--canvas)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: 'var(--canvas)' }}>
               
-              <div style={{ display: 'flex', flex: 1 }}>
+              {/* ── Middle Area (Sidebar + Scrollable Main) ── */}
+              <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
                 <Sidebar user={user} onLogout={handleLogout} />
-                <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ flex: 1 }} className="content-wrapper">
+                <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+                  <div style={{ flex: 1, flexShrink: 0 }} className="content-wrapper">
                     <Routes>
                       <Route path="/" element={<Dashboard user={user} />} />
                       <Route path="/dashboard" element={<Dashboard user={user} />} />
@@ -173,26 +174,32 @@ function App() {
               
               {/* ── Footer ──────────────────────────────────────────────────────── */}
               <footer style={{
-                padding: '24px 16px',
+                flexShrink: 0,
+                padding: '16px 24px',
                 borderTop: '1px solid var(--hairline)',
                 textAlign: 'center',
                 fontFamily: 'var(--font-mono)',
                 fontSize: 11,
                 color: 'var(--mute)',
                 display: 'flex',
-                flexDirection: 'column',
-                gap: 4,
+                alignItems: 'center',
+                justifyContent: 'space-between',
                 background: 'var(--canvas-panel)'
               }} className="app-footer">
-                <p>QR Based Visitor Management System • Sigma University</p>
-                <p>Made by Srijan, Daxesh, Vaibhav, and Mayur</p>
-                <p style={{ marginTop: 8 }}>QR-Pass Core v1.0.0 &copy; {new Date().getFullYear()} — All rights reserved.</p>
+                <div style={{ textAlign: 'left' }}>
+                  <p>QR Based Visitor Management System • Sigma University</p>
+                  <p style={{ marginTop: 2 }}>Made by Srijan, Daxesh, Vaibhav, and Mayur</p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <p>QR-Pass Core v1.0.0 &copy; {new Date().getFullYear()}</p>
+                  <p style={{ marginTop: 2 }}>All rights reserved.</p>
+                </div>
               </footer>
 
               {/* ── Desktop Sidebar (md+) visible via CSS ─────────────────── */}
               <style>{`
                 @media (min-width: 768px) {
-                  #desktop-sidebar { display: block !important; position: sticky; top: 0; align-self: flex-start; height: 100vh; width: 240px; z-index: 50; background: var(--canvas); border-right: 1px solid var(--hairline); }
+                  #desktop-sidebar { display: flex !important; flex-direction: column; height: 100%; width: 240px; z-index: 50; background: var(--canvas); border-right: 1px solid var(--hairline); flex-shrink: 0; }
                   #mobile-header { display: none !important; }
                   #mobile-bottomnav { display: none !important; }
                   .content-wrapper { padding: 48px 32px 32px 32px !important; }
@@ -202,7 +209,8 @@ function App() {
                   #mobile-header { display: flex !important; }
                   #mobile-bottomnav { display: flex !important; }
                   .content-wrapper { padding: 84px 16px 32px 16px !important; }
-                  .app-footer { padding-bottom: 80px !important; } /* space for mobile nav */
+                  .app-footer { padding-bottom: 80px !important; flex-direction: column !important; text-align: center !important; gap: 12px; }
+                  .app-footer > div { text-align: center !important; }
                 }
               `}</style>
             </div>

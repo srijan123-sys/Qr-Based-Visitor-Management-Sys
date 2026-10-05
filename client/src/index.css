@@ -103,7 +103,7 @@ html, body {
   background-color: var(--canvas);
   color: var(--ink);
   font-family: var(--font-sans);
-  overflow-x: hidden;
+  overflow-x: clip;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
