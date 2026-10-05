@@ -102,7 +102,7 @@ function App() {
             <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--canvas)' }}>
               <Sidebar user={user} onLogout={handleLogout} />
               <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1 }} className="content-wrapper">
                   <Routes>
                     <Route path="/" element={<Dashboard user={user} />} />
                     <Route path="/dashboard" element={<Dashboard user={user} />} />
@@ -170,7 +170,7 @@ function App() {
                 {/* ── Footer ──────────────────────────────────────────────────────── */}
                 <footer style={{
                   marginTop: 'auto',
-                  paddingTop: 24,
+                  padding: '24px 16px',
                   borderTop: '1px solid var(--hairline)',
                   textAlign: 'center',
                   fontFamily: 'var(--font-mono)',
@@ -178,8 +178,9 @@ function App() {
                   color: 'var(--mute)',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 4
-                }}>
+                  gap: 4,
+                  background: 'var(--canvas-panel)'
+                }} className="app-footer">
                   <p>QR Based Visitor Management System • Sigma University</p>
                   <p>Made by Srijan, Daxesh, Vaibhav, and Mayur</p>
                 </footer>
@@ -191,13 +192,17 @@ function App() {
                   #desktop-sidebar { display: flex !important; position: fixed; top: 0; left: 0; bottom: 0; width: 240px; z-index: 50; }
                   #mobile-header { display: none !important; }
                   #mobile-bottomnav { display: none !important; }
-                  .main-content { margin-left: 240px; padding: 48px 32px 80px 32px !important; }
+                  .main-content { margin-left: 240px; }
+                  .content-wrapper { padding: 48px 32px 32px 32px !important; }
+                  .app-footer { padding-bottom: 24px !important; }
                 }
                 @media (max-width: 767px) {
                   #desktop-sidebar { display: none !important; }
                   #mobile-header { display: flex !important; }
                   #mobile-bottomnav { display: flex !important; }
-                  .main-content { margin-left: 0; padding: 20px 16px 80px 16px !important; padding-top: 72px !important; }
+                  .main-content { margin-left: 0; }
+                  .content-wrapper { padding: 84px 16px 32px 16px !important; }
+                  .app-footer { padding-bottom: 80px !important; } /* space for mobile nav */
                 }
               `}</style>
             </div>
