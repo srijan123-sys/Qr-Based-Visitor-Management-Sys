@@ -404,7 +404,7 @@ const Dashboard = ({ user }) => {
 
       {/* Face Preview Modal */}
       {facePreview && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--overlay)' }} onClick={() => setFacePreview(null)}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={() => setFacePreview(null)}>
           <div className="card" style={{ width: 320, padding: 24, textAlign: 'center', position: 'relative' }} onClick={e => e.stopPropagation()}>
             <button onClick={() => setFacePreview(null)} style={{ position: 'absolute', top: 12, right: 12, background: 'none', border: 'none', color: 'var(--mute)', cursor: 'pointer' }}>
               <FiX size={18} />
@@ -422,7 +422,7 @@ const Dashboard = ({ user }) => {
 
       {/* Walk-in Modal */}
       {showWalkInModal && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--overlay)', padding: 16 }}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', padding: 16 }}>
           <div className="card animate-fade-in" style={{ width: '100%', maxWidth: 480, maxHeight: '90vh', overflowY: 'auto', position: 'relative', padding: 32 }}>
             <button onClick={() => setShowWalkInModal(false)} style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', color: 'var(--mute)', cursor: 'pointer' }}>
               <FiX size={18} />
