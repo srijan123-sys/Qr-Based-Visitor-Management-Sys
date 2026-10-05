@@ -1,111 +1,143 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  About.jsx — Vercel Geist Style
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 import React from 'react';
-import { FiInfo, FiShield, FiCpu, FiCode, FiLayers } from 'react-icons/fi';
+import { FiInfo, FiShield, FiCpu, FiZap, FiCheck } from 'react-icons/fi';
 import { HiOutlineQrcode } from 'react-icons/hi';
+
+const techStack = ['React 18', 'Vite', 'Node.js', 'Express', 'MongoDB', 'Tailwind 4', 'JWT Auth', 'Mongoose'];
+
+const roles = [
+  { tag: 'USER', label: 'Basic Access', desc: 'Can view and manage their own personal visits independently.', color: '#0070f3' },
+  { tag: 'RECEPTIONIST', label: 'Desk Control', desc: 'Can view the live visitor log and provide Reception QR codes.', color: '#7928ca' },
+  { tag: 'ADMIN', label: 'Full Access', desc: 'Complete control over users, QR generation, and system operations.', color: '#ff4d4d' },
+];
+
+const features = [
+  'Contactless QR Scanning for fast Check-Ins',
+  'Role-Based Access Control (RBAC)',
+  'Automated Checkout via Cron Jobs (5:00 PM)',
+  'Real-time Analytics and CSV Exporting',
+  'JWT-secured REST API',
+  'Mobile-responsive UI',
+];
 
 const About = () => {
   return (
-    <div className="space-y-6 animate-fade-in max-w-4xl mx-auto pb-12 pt-4 px-4 sm:px-0">
-      <div className="border-b border-white/[0.06] pb-4 flex items-center gap-3">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 p-[1.5px] shadow-lg shadow-indigo-500/20">
-          <div className="w-full h-full bg-[#0A0A0F] rounded-[10px] flex items-center justify-center">
-            <FiInfo className="text-indigo-400 text-2xl" />
+    <div className="animate-fade-in" style={{ maxWidth: 860, margin: '0 auto', paddingBottom: 64 }}>
+
+      {/* Page Header */}
+      <div style={{ marginBottom: 40 }}>
+        <p className="text-eyebrow" style={{ marginBottom: 8 }}>About</p>
+        <h1 style={{ fontFamily: 'var(--font-sans)', fontSize: 32, fontWeight: 600, letterSpacing: '-1.28px', color: 'var(--ink)', lineHeight: '40px', marginBottom: 8 }}>
+          QR-Pass — Visitor Management System
+        </h1>
+        <p className="text-body-lg">
+          An enterprise-grade digital visitor management platform designed to modernize the front-desk experience.
+        </p>
+        <div style={{ marginTop: 16, height: 1, background: 'var(--hairline)' }} />
+      </div>
+
+      {/* Feature grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 1, background: 'var(--hairline)', border: '1px solid var(--hairline)', borderRadius: 12, overflow: 'hidden', marginBottom: 32 }}>
+        {/* What is QR-MS */}
+        <div className="card-flat" style={{ borderRadius: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+            <HiOutlineQrcode style={{ fontSize: 18, color: 'var(--ink)' }} />
+            <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 16, fontWeight: 600, letterSpacing: '-0.3px', color: 'var(--ink)' }}>
+              What is QR-Pass?
+            </h2>
           </div>
+          <p className="text-body-md" style={{ lineHeight: '22px' }}>
+            QR-Pass replaces manual paper visitor logs with an automated, secure, and touchless QR-based check-in workflow — engineered for speed, security, and scalability.
+          </p>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">About QR-MS</h1>
-          <p className="text-sm text-zinc-400 mt-0.5">Learn more about the QR Management System.</p>
+
+        {/* Key features */}
+        <div className="card-flat" style={{ borderRadius: 0 }}>
+          <p className="text-eyebrow" style={{ marginBottom: 16 }}>Key Features</p>
+          <ul style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {features.map(f => (
+              <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, color: 'var(--body)', lineHeight: '18px' }}>
+                <FiCheck style={{ color: 'var(--link)', flexShrink: 0, marginTop: 2, fontSize: 14 }} />
+                {f}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Core System Info */}
-        <div className="bg-[#13131F]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-2xl shadow-xl space-y-4">
-          <div className="flex items-center gap-3 text-white font-semibold text-lg border-b border-white/[0.06] pb-3">
-            <HiOutlineQrcode className="text-cyan-400 text-xl" />
-            What is QR-MS?
-          </div>
-          <p className="text-sm text-zinc-400 leading-relaxed">
-            QR-MS (QR Management System) is an enterprise-grade digital visitor management application designed to modernize the front-desk experience. It replaces manual paper logs with an automated, secure, and touchless QR-based check-in workflow.
-          </p>
-          <div className="pt-2">
-            <h4 className="text-xs font-mono font-bold text-zinc-500 uppercase tracking-wider mb-2">Key Highlights</h4>
-            <ul className="space-y-2 text-sm text-zinc-300">
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1.5 shrink-0" />
-                Contactless QR Scanning for fast Check-Ins
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1.5 shrink-0" />
-                Automated Checkout via Cron Jobs (5:00 PM)
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1.5 shrink-0" />
-                Real-time Analytics and CSV Exporting
-              </li>
-            </ul>
-          </div>
+      {/* Role-based access */}
+      <div className="card" style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
+          <FiShield style={{ fontSize: 16, color: 'var(--ink)' }} />
+          <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 18, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)' }}>
+            Role-Based Access Control
+          </h2>
         </div>
-
-        {/* Security & Access */}
-        <div className="bg-[#13131F]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-2xl shadow-xl space-y-4">
-          <div className="flex items-center gap-3 text-white font-semibold text-lg border-b border-white/[0.06] pb-3">
-            <FiShield className="text-orange-400 text-xl" />
-            Role-Based Access
-          </div>
-          <p className="text-sm text-zinc-400 leading-relaxed">
-            The system employs strict RBAC (Role-Based Access Control) to ensure data privacy and security.
-          </p>
-          <div className="space-y-3 pt-2">
-            <div className="p-3 rounded-lg border border-white/[0.04] bg-white/[0.01]">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">USER</span>
-                <span className="text-sm font-semibold text-white">Basic Access</span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+          {roles.map(({ tag, label, desc, color }) => (
+            <div key={tag} style={{
+              padding: '16px',
+              borderRadius: 8,
+              border: '1px solid var(--hairline)',
+              background: 'var(--canvas-panel)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <span style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 10,
+                  fontWeight: 600,
+                  padding: '2px 7px',
+                  borderRadius: 4,
+                  background: `${color}18`,
+                  color,
+                  border: `1px solid ${color}35`,
+                  letterSpacing: '0.05em',
+                }}>
+                  {tag}
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{label}</span>
               </div>
-              <p className="text-xs text-zinc-500">Can view and manage their own personal visits independently.</p>
+              <p style={{ fontSize: 12, color: 'var(--mute)', lineHeight: '18px' }}>{desc}</p>
             </div>
-            
-            <div className="p-3 rounded-lg border border-white/[0.04] bg-white/[0.01]">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/20">RECEPTIONIST</span>
-                <span className="text-sm font-semibold text-white">Desk Control</span>
-              </div>
-              <p className="text-xs text-zinc-500">Can view the live visitor log and provide Reception QR codes.</p>
-            </div>
-
-            <div className="p-3 rounded-lg border border-white/[0.04] bg-white/[0.01]">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/15 text-purple-400 border border-purple-500/20">ADMIN</span>
-                <span className="text-sm font-semibold text-white">Full Access</span>
-              </div>
-              <p className="text-xs text-zinc-500">Complete control over users, QR generation, and system operations.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Tech Stack */}
-        <div className="md:col-span-2 bg-[#13131F]/80 backdrop-blur-xl border border-white/[0.08] p-6 rounded-2xl shadow-xl flex flex-col sm:flex-row gap-6 items-center sm:items-start">
-          <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center shrink-0">
-            <FiCpu className="text-3xl text-zinc-500" />
-          </div>
-          <div className="flex-1 space-y-2 text-center sm:text-left">
-            <h3 className="text-lg font-semibold text-white">Powered by Modern Tech</h3>
-            <p className="text-sm text-zinc-400">
-              Built on the robust MERN stack (MongoDB, Express, React, Node.js) with Tailwind CSS for a premium, glassmorphic UI. Engineered for speed, security, and scalability.
-            </p>
-            <div className="flex flex-wrap gap-2 justify-center sm:justify-start pt-2">
-              <span className="text-[11px] font-mono px-2.5 py-1 rounded-md bg-white/[0.04] text-zinc-300 border border-white/[0.08]">React 18</span>
-              <span className="text-[11px] font-mono px-2.5 py-1 rounded-md bg-white/[0.04] text-zinc-300 border border-white/[0.08]">Node.js</span>
-              <span className="text-[11px] font-mono px-2.5 py-1 rounded-md bg-white/[0.04] text-zinc-300 border border-white/[0.08]">MongoDB</span>
-              <span className="text-[11px] font-mono px-2.5 py-1 rounded-md bg-white/[0.04] text-zinc-300 border border-white/[0.08]">Tailwind 4</span>
-              <span className="text-[11px] font-mono px-2.5 py-1 rounded-md bg-white/[0.04] text-zinc-300 border border-white/[0.08]">JWT Auth</span>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
-      
-      <div className="text-center pt-8 pb-4">
-        <p className="text-xs font-mono text-zinc-600">
-          QR-MS Core System v1.0.0 &copy; {new Date().getFullYear()}
+
+      {/* Tech stack */}
+      <div className="card">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+          <FiCpu style={{ fontSize: 16, color: 'var(--ink)' }} />
+          <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 18, fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--ink)' }}>
+            Technology Stack
+          </h2>
+        </div>
+        <p className="text-body-md" style={{ marginBottom: 20, maxWidth: 500 }}>
+          Built on the robust MERN stack with Tailwind CSS 4 — engineered for performance, security, and developer experience.
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {techStack.map(t => (
+            <span key={t} style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 12,
+              padding: '4px 10px',
+              borderRadius: 6,
+              border: '1px solid var(--hairline)',
+              background: 'var(--canvas-panel)',
+              color: 'var(--body)',
+            }}>
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{ textAlign: 'center', marginTop: 48 }}>
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--mute)' }}>
+          QR-Pass Core v1.0.0 &copy; {new Date().getFullYear()} — All rights reserved.
         </p>
       </div>
     </div>

@@ -1,7 +1,11 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  AdminPanel.jsx — Vercel Geist Style
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 import React, { useState, useEffect } from 'react';
 import API from '../api/axios.js';
 import { toast } from 'react-hot-toast';
-import { FiShield, FiTrash2, FiUserCheck, FiUserX, FiAlertTriangle } from 'react-icons/fi';
+import { FiShield, FiTrash2, FiAlertTriangle } from 'react-icons/fi';
 
 const AdminPanel = ({ user: currentUser }) => {
   const [users, setUsers] = useState([]);
@@ -33,10 +37,7 @@ const AdminPanel = ({ user: currentUser }) => {
   };
 
   const handleDelete = async (userId, email) => {
-    if (!window.confirm(`Are you absolutely sure you want to delete ${email}? This action cannot be undone.`)) {
-      return;
-    }
-    
+    if (!window.confirm(`Are you absolutely sure you want to delete ${email}? This action cannot be undone.`)) return;
     try {
       await API.delete(`/users/${userId}`);
       toast.success('User deleted permanently');
@@ -46,91 +47,190 @@ const AdminPanel = ({ user: currentUser }) => {
     }
   };
 
+  const roleColors = {
+    admin: { bg: '#ff4d4d18', color: '#ff4444', border: '#ff444430' },
+    receptionist: { bg: '#7928ca18', color: '#7928ca', border: '#7928ca30' },
+    user: { bg: '#0070f318', color: '#0070f3', border: '#0070f330' },
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 rounded-full border-2 border-cyan-500/20 border-t-cyan-500 animate-spin"></div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '50vh' }}>
+        <div className="spinner" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-5xl mx-auto pb-12">
-      <div className="flex flex-col gap-2 pb-2 border-b border-white/[0.06]">
-        <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-          <FiShield className="text-red-500" /> Super Admin Control Panel
+    <div className="animate-fade-in" style={{ maxWidth: 920, margin: '0 auto', paddingBottom: 64 }}>
+
+      {/* Page header */}
+      <div style={{ marginBottom: 32 }}>
+        <p className="text-eyebrow" style={{ marginBottom: 8 }}>Administration</p>
+        <h1 style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: 28,
+          fontWeight: 600,
+          letterSpacing: '-1px',
+          color: 'var(--ink)',
+          lineHeight: '36px',
+          marginBottom: 6,
+        }}>
+          User Management
         </h1>
-        <p className="text-sm text-zinc-400">
-          Manage system access, assign roles, and remove unauthorized accounts. With great power comes great responsibility.
+        <p className="text-body-md">
+          Manage system access, assign roles, and remove unauthorized accounts.
         </p>
+        <div style={{ marginTop: 20, height: 1, background: 'var(--hairline)' }} />
       </div>
 
-      <div className="card !p-0 overflow-hidden border border-red-500/20 shadow-2xl shadow-red-500/5">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+      {/* Users table */}
+      <div className="card" style={{ padding: 0, overflow: 'hidden', marginBottom: 20 }}>
+        {/* Table header */}
+        <div style={{
+          padding: '12px 20px',
+          borderBottom: '1px solid var(--hairline)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <FiShield style={{ fontSize: 14, color: 'var(--mute)' }} />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)' }}>
+              System Users
+            </span>
+          </div>
+          <span className="badge">{users.length} total</span>
+        </div>
+
+        <div style={{ overflowX: 'auto' }}>
+          <table className="data-table">
             <thead>
-              <tr className="bg-red-500/10 text-red-400 text-xs font-mono uppercase tracking-wider border-b border-red-500/20">
-                <th className="py-3 px-4 font-semibold">User Name</th>
-                <th className="py-3 px-4 font-semibold">Email</th>
-                <th className="py-3 px-4 font-semibold">Current Role</th>
-                <th className="py-3 px-4 font-semibold text-right">Admin Actions</th>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04] text-sm">
-              {users.map(u => (
-                <tr key={u._id} className={`transition-colors ${u.email === 'thewisdom620@gmail.com' ? 'bg-amber-500/5' : 'hover:bg-white/[0.02]'}`}>
-                  <td className="py-3 px-4 text-white font-medium">
-                    {u.name}
-                    {u._id === currentUser._id && (
-                      <span className="ml-2 text-[10px] bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded uppercase font-mono">You</span>
-                    )}
-                    {u.email === 'thewisdom620@gmail.com' && (
-                      <span className="ml-2 text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">👑 Final Boss</span>
-                    )}
-                  </td>
-                  <td className="py-3 px-4 text-zinc-400 font-mono text-xs">{u.email}</td>
-                  <td className="py-3 px-4">
-                    <select
-                      value={u.role}
-                      onChange={(e) => handleRoleChange(u._id, e.target.value)}
-                      disabled={u._id === currentUser._id || u.email === 'thewisdom620@gmail.com'}
-                      className={`text-xs font-semibold px-2 py-1 rounded outline-none cursor-pointer ${
-                        u.role === 'admin' 
-                          ? 'bg-red-500/20 text-red-400 border border-red-500/30' 
-                          : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
-                      } ${(u._id === currentUser._id || u.email === 'thewisdom620@gmail.com') ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      <option value="admin">Admin (Full Power)</option>
-                      <option value="receptionist">Receptionist (Limited)</option>
-                      <option value="user">User (No Dashboard Access)</option>
-                    </select>
-                  </td>
-                  <td className="py-3 px-4 text-right">
-                    <button
-                      onClick={() => handleDelete(u._id, u.email)}
-                      disabled={u._id === currentUser._id || u.email === 'thewisdom620@gmail.com'}
-                      className={`p-2 rounded-lg transition-colors ${
-                        (u._id === currentUser._id || u.email === 'thewisdom620@gmail.com')
-                          ? 'text-zinc-600 cursor-not-allowed'
-                          : 'text-zinc-400 hover:bg-red-500/20 hover:text-red-400'
-                      }`}
-                      title={(u._id === currentUser._id || u.email === 'thewisdom620@gmail.com') ? "Cannot delete this user" : "Delete User"}
-                    >
-                      <FiTrash2 />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+            <tbody>
+              {users.map(u => {
+                const isSelf = u._id === currentUser._id;
+                const isBoss = u.email === 'thewisdom620@gmail.com';
+                const locked = isSelf || isBoss;
+                const rc = roleColors[u.role] || roleColors.user;
+
+                return (
+                  <tr key={u._id}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: 6,
+                          background: 'var(--canvas-panel)',
+                          border: '1px solid var(--hairline)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 12,
+                          fontWeight: 600,
+                          color: 'var(--body)',
+                          flexShrink: 0,
+                        }}>
+                          {u.name?.charAt(0).toUpperCase() || 'U'}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            {u.name}
+                            {isSelf && (
+                              <span style={{
+                                fontFamily: 'var(--font-mono)', fontSize: 9, padding: '1px 5px',
+                                borderRadius: 3, background: 'var(--link-soft)', color: 'var(--link)',
+                                border: '1px solid rgba(0,112,243,0.2)',
+                              }}>
+                                YOU
+                              </span>
+                            )}
+                            {isBoss && (
+                              <span style={{
+                                fontFamily: 'var(--font-mono)', fontSize: 9, padding: '1px 5px',
+                                borderRadius: 3, background: 'rgba(245,166,35,0.12)', color: '#f5a623',
+                                border: '1px solid rgba(245,166,35,0.25)',
+                              }}>
+                                👑 OWNER
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--mute)' }}>
+                        {u.email}
+                      </span>
+                    </td>
+                    <td>
+                      <select
+                        value={u.role}
+                        onChange={(e) => handleRoleChange(u._id, e.target.value)}
+                        disabled={locked}
+                        className="input-field"
+                        style={{
+                          height: 28,
+                          padding: '0 24px 0 8px',
+                          fontSize: 12,
+                          fontFamily: 'var(--font-mono)',
+                          width: 'auto',
+                          minWidth: 130,
+                          background: rc.bg,
+                          color: rc.color,
+                          borderColor: rc.border,
+                          opacity: locked ? 0.45 : 1,
+                          cursor: locked ? 'not-allowed' : 'pointer',
+                          fontWeight: 500,
+                          letterSpacing: '0.02em',
+                        }}
+                      >
+                        <option value="admin">Admin</option>
+                        <option value="receptionist">Receptionist</option>
+                        <option value="user">User</option>
+                      </select>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button
+                        onClick={() => handleDelete(u._id, u.email)}
+                        disabled={locked}
+                        className="btn-danger"
+                        style={{ opacity: locked ? 0.35 : 1, cursor: locked ? 'not-allowed' : 'pointer' }}
+                        title={locked ? 'Cannot delete this user' : 'Delete user'}
+                      >
+                        <FiTrash2 size={13} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       </div>
 
-      <div className="p-4 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs flex gap-3 items-start">
-        <FiAlertTriangle className="text-lg shrink-0 mt-0.5" />
-        <div>
-          <strong>Security Warning:</strong> Changing a user's role to 'Admin' gives them the exact same powers as you. They will be able to delete QR codes, view all logs, and even delete other receptionists. Please assign roles carefully.
-        </div>
+      {/* Security warning */}
+      <div style={{
+        display: 'flex',
+        gap: 12,
+        padding: '14px 16px',
+        borderRadius: 8,
+        border: '1px solid rgba(245,166,35,0.3)',
+        background: 'rgba(245,166,35,0.06)',
+        alignItems: 'flex-start',
+      }}>
+        <FiAlertTriangle style={{ color: '#f5a623', flexShrink: 0, marginTop: 1, fontSize: 15 }} />
+        <p style={{ fontSize: 13, color: 'var(--body)', lineHeight: '20px' }}>
+          <strong style={{ color: 'var(--ink)' }}>Security warning:</strong>{' '}
+          Changing a user's role to Admin grants them the same privileges as you — including user deletion, QR management, and full system access. Assign roles carefully.
+        </p>
       </div>
     </div>
   );

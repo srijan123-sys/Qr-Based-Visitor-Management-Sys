@@ -1,20 +1,22 @@
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  Login.jsx — Authentication Page
+//  Login.jsx — Vercel Geist Auth Page
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { HiOutlineMail, HiOutlineLockClosed } from 'react-icons/hi';
-import { FiShield } from 'react-icons/fi';
+import { FiArrowRight, FiSun, FiMoon } from 'react-icons/fi';
+import { HiOutlineQrcode } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 import API from '../api/axios.js';
+import { useTheme } from '../App.jsx';
 
-// ── Email Regex (same as backend) ─────────────────────────
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export default function Login({ onLogin }) {
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -26,13 +28,10 @@ export default function Login({ onLogin }) {
       toast.error('Please fill in all fields');
       return;
     }
-
-    // Email regex validation
     if (!EMAIL_REGEX.test(form.email.trim())) {
       toast.error('Please enter a valid email address');
       return;
     }
-
     try {
       setLoading(true);
       const res = await API.post('/auth/login', form);
@@ -46,81 +45,234 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[#0A0A0F]">
-      <div className="card max-w-md w-full border border-white/[0.12] p-8 shadow-2xl relative bg-[#13131F]/90 backdrop-blur-xl animate-fade-in">
-        {/* Brand Header */}
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 via-blue-600 to-orange-500 p-[1.5px] mx-auto mb-3 shadow-lg shadow-cyan-500/20">
-            <div className="w-full h-full bg-[#0A0A0F] rounded-[14px] flex items-center justify-center">
-              <FiShield className="text-cyan-400 text-xl" />
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      background: 'var(--canvas)',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Hero mesh gradient — only decorative element per Vercel design */}
+      <div className="hero-mesh" style={{
+        position: 'absolute',
+        inset: 0,
+        pointerEvents: 'none',
+        zIndex: 0,
+        opacity: theme === 'dark' ? 1 : 0.4,
+      }} />
+
+      {/* Top bar */}
+      <header style={{
+        position: 'relative',
+        zIndex: 10,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 32px',
+        height: 56,
+        borderBottom: '1px solid var(--hairline)',
+      }}>
+        {/* Wordmark */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{
+            width: 28,
+            height: 28,
+            borderRadius: 7,
+            background: 'linear-gradient(135deg, #007cf0, #7928ca, #ff0080)',
+            padding: '1.5px',
+          }}>
+            <div style={{
+              width: '100%',
+              height: '100%',
+              background: 'var(--canvas)',
+              borderRadius: 6,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <HiOutlineQrcode style={{ color: 'var(--ink)', fontSize: 14 }} />
             </div>
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">QR-Pass</h1>
-          <p className="text-xs text-zinc-400 mt-1">QR-Based Management System — Admin Login</p>
+          <span style={{ fontFamily: 'var(--font-sans)', fontSize: 15, fontWeight: 600, letterSpacing: '-0.3px', color: 'var(--ink)' }}>
+            QR-Pass
+          </span>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5" htmlFor="login-email">
-              Email Address
-            </label>
-            <div className="relative">
-              <HiOutlineMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-lg" />
-              <input
-                type="email"
-                id="login-email"
-                name="email"
-                className="input-field !pl-10 text-sm"
-                placeholder="admin@vault.io"
-                value={form.email}
-                onChange={handleChange}
-                required
-                autoComplete="email"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5" htmlFor="login-password">
-              Password
-            </label>
-            <div className="relative">
-              <HiOutlineLockClosed className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-lg" />
-              <input
-                type="password"
-                id="login-password"
-                name="password"
-                className="input-field !pl-10 text-sm"
-                placeholder="••••••••"
-                value={form.password}
-                onChange={handleChange}
-                required
-                autoComplete="current-password"
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="btn-primary w-full !py-3 text-sm shadow-xl shadow-orange-500/25 justify-center mt-2"
-            disabled={loading}
-          >
-            {loading ? 'Signing in...' : 'Sign In to Dashboard'}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* Theme toggle */}
+          <button className="theme-toggle" onClick={toggleTheme} title="Toggle theme">
+            {theme === 'dark' ? <FiSun size={14} /> : <FiMoon size={14} />}
           </button>
-        </form>
-
-        <div className="mt-6 pt-5 border-t border-white/[0.06] text-center text-xs text-zinc-400 space-y-2">
-          <Link 
-            to="/forgotpassword"
-            className="text-orange-400 font-semibold hover:underline block w-full"
-          >
-            Forgot Password?
+          <Link to="/signup" className="btn-ghost-sm" style={{ textDecoration: 'none' }}>
+            Sign Up
           </Link>
-          <div>
-            Don't have an admin account?{' '}
-            <Link to="/signup" className="text-cyan-400 font-semibold hover:underline">
-              Register new account
-            </Link>
+        </div>
+      </header>
+
+      {/* Center form */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '48px 24px',
+        position: 'relative',
+        zIndex: 10,
+      }}>
+        <div className="animate-fade-in" style={{ width: '100%', maxWidth: 400 }}>
+          {/* Eyebrow */}
+          <p className="text-eyebrow" style={{ textAlign: 'center', marginBottom: 12 }}>
+            Visitor Management System
+          </p>
+
+          {/* Headline */}
+          <h1 style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: 32,
+            fontWeight: 600,
+            letterSpacing: '-1.28px',
+            color: 'var(--ink)',
+            textAlign: 'center',
+            lineHeight: '40px',
+            marginBottom: 8,
+          }}>
+            Sign in to QR-Pass
+          </h1>
+
+          <p className="text-body-md" style={{ textAlign: 'center', marginBottom: 36 }}>
+            Enter your credentials to access the dashboard.
+          </p>
+
+          {/* Card */}
+          <div className="card card-lg" style={{ boxShadow: 'var(--shadow-float)' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+              {/* Email */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                  color: 'var(--mute)',
+                  marginBottom: 8,
+                }}
+                htmlFor="login-email"
+                >
+                  Email Address
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <HiOutlineMail style={{
+                    position: 'absolute',
+                    left: 12,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'var(--mute)',
+                    fontSize: 16,
+                    pointerEvents: 'none',
+                  }} />
+                  <input
+                    type="email"
+                    id="login-email"
+                    name="email"
+                    className="input-field input-field-icon"
+                    placeholder="admin@company.com"
+                    value={form.email}
+                    onChange={handleChange}
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <label style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 11,
+                    fontWeight: 500,
+                    letterSpacing: '0.05em',
+                    textTransform: 'uppercase',
+                    color: 'var(--mute)',
+                  }}
+                  htmlFor="login-password"
+                  >
+                    Password
+                  </label>
+                  <Link to="/forgotpassword" style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: 12,
+                    color: 'var(--link)',
+                    textDecoration: 'none',
+                  }}
+                  onMouseOver={e => e.target.style.textDecoration = 'underline'}
+                  onMouseOut={e => e.target.style.textDecoration = 'none'}
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <div style={{ position: 'relative' }}>
+                  <HiOutlineLockClosed style={{
+                    position: 'absolute',
+                    left: 12,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'var(--mute)',
+                    fontSize: 16,
+                    pointerEvents: 'none',
+                  }} />
+                  <input
+                    type="password"
+                    id="login-password"
+                    name="password"
+                    className="input-field input-field-icon"
+                    placeholder="••••••••"
+                    value={form.password}
+                    onChange={handleChange}
+                    required
+                    autoComplete="current-password"
+                  />
+                </div>
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                className="btn-primary btn-full btn-lg"
+                disabled={loading}
+                style={{ marginTop: 4 }}
+              >
+                {loading ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span className="spinner" style={{ borderColor: 'rgba(255,255,255,0.2)', borderTopColor: '#fff', width: 16, height: 16 }} />
+                    Signing in...
+                  </span>
+                ) : (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    Sign In
+                    <FiArrowRight size={16} />
+                  </span>
+                )}
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div style={{ margin: '24px 0', borderTop: '1px solid var(--hairline)' }} />
+
+            {/* Footer */}
+            <p style={{ textAlign: 'center', fontSize: 13, color: 'var(--mute)' }}>
+              Don't have an account?{' '}
+              <Link to="/signup" style={{ color: 'var(--link)', textDecoration: 'none', fontWeight: 500 }}
+                onMouseOver={e => e.target.style.textDecoration = 'underline'}
+                onMouseOut={e => e.target.style.textDecoration = 'none'}
+              >
+                Create account
+              </Link>
+            </p>
           </div>
         </div>
       </div>

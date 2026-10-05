@@ -1,5 +1,5 @@
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  React Entry Point
+//  React Entry Point — Vercel Geist Design
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 import { StrictMode } from 'react';
@@ -9,6 +9,10 @@ import { Toaster } from 'react-hot-toast';
 import App from './App.jsx';
 import './index.css';
 
+// Apply dark mode class to <html> on load
+const saved = localStorage.getItem('qr_theme') || 'dark';
+document.documentElement.classList.add(saved);
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
@@ -16,26 +20,17 @@ createRoot(document.getElementById('root')).render(
       <Toaster
         position="top-right"
         toastOptions={{
-          duration: 3000,
+          duration: 3500,
+          className: 'toast-vercel',
           style: {
-            background: '#1a1a2e',
-            color: '#ededed',
-            border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: '12px',
-            fontFamily: "'Inter', sans-serif",
-            fontSize: '0.875rem',
+            fontFamily: "'Geist', 'Inter', sans-serif",
+            fontSize: '14px',
           },
           success: {
-            iconTheme: {
-              primary: '#22c55e',
-              secondary: '#1a1a2e',
-            },
+            iconTheme: { primary: '#0070f3', secondary: '#ffffff' },
           },
           error: {
-            iconTheme: {
-              primary: '#ef4444',
-              secondary: '#1a1a2e',
-            },
+            iconTheme: { primary: '#ff4444', secondary: '#ffffff' },
           },
         }}
       />

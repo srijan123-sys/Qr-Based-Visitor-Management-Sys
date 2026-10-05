@@ -1,9 +1,9 @@
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  App.jsx — Root Component with Routing
+//  App.jsx — Root Component with Routing + Theme
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import Sidebar from './components/Sidebar.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import CreateQR from './components/CreateQR.jsx';
@@ -16,9 +16,28 @@ import AdminPanel from './components/AdminPanel.jsx';
 import About from './components/About.jsx';
 import { Toaster } from 'react-hot-toast';
 
+// ── Theme Context ──────────────────────────────────────────────────
+export const ThemeContext = createContext({
+  theme: 'dark',
+  toggleTheme: () => {},
+});
+
+export const useTheme = () => useContext(ThemeContext);
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [theme, setTheme] = useState(() => localStorage.getItem('qr_theme') || 'dark');
+
+  // Sync theme class on <html>
+  useEffect(() => {
+    const html = document.documentElement;
+    html.classList.remove('dark', 'light');
+    html.classList.add(theme);
+    localStorage.setItem('qr_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(t => (t === 'dark' ? 'light' : 'dark'));
 
   // Check for existing auth on mount
   useEffect(() => {
@@ -54,54 +73,65 @@ function App() {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100vh',
-        color: 'var(--text-muted)',
-        fontFamily: 'var(--font-mono)',
+        background: 'var(--canvas)',
       }}>
-        Loading...
+        <div className="spinner" />
       </div>
     );
   }
 
-  // Not authenticated → show auth pages OR public check-in
-  if (!user) {
-    return (
-      <>
-        <Toaster position="top-right" toastOptions={{ className: 'glass-panel text-white' }} />
-        <Routes>
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
-          <Route path="/forgotpassword" element={<ForgotPassword />} />
-          <Route path="/resetpassword/:resettoken" element={<ResetPassword onLogin={handleLogin} />} />
-          <Route path="/checkin/:qrId" element={<CheckIn />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </>
-    );
-  }
-
-  // Authenticated → show dashboard layout OR public check-in
   return (
-    <>
-      <Toaster position="top-right" toastOptions={{ className: 'glass-panel text-white' }} />
-      <Routes>
-        <Route path="/checkin/:qrId" element={<CheckIn />} />
-        <Route path="*" element={
-          <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-[#0A0A0F]">
-            <Sidebar user={user} onLogout={handleLogout} />
-            <main className="flex-1 overflow-y-auto p-3.5 sm:p-6 md:p-8 pb-24 md:pb-8">
-              <Routes>
-                <Route path="/" element={<Dashboard user={user} />} />
-                <Route path="/dashboard" element={<Dashboard user={user} />} />
-                <Route path="/create" element={['admin', 'receptionist'].includes(user.role) ? <CreateQR /> : <Navigate to="/dashboard" replace />} />
-                <Route path="/users" element={user.role === 'admin' ? <AdminPanel user={user} /> : <Navigate to="/dashboard" replace />} />
-                <Route path="/about" element={<About />} />
-                <Route path="*" element={<Navigate to="/dashboard" replace />} />
-              </Routes>
-            </main>
-          </div>
-        } />
-      </Routes>
-    </>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {/* Not authenticated → auth pages OR public check-in */}
+      {!user ? (
+        <>
+          <Routes>
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
+            <Route path="/forgotpassword" element={<ForgotPassword />} />
+            <Route path="/resetpassword/:resettoken" element={<ResetPassword onLogin={handleLogin} />} />
+            <Route path="/checkin/:qrId" element={<CheckIn />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </>
+      ) : (
+        /* Authenticated → dashboard layout OR public check-in */
+        <Routes>
+          <Route path="/checkin/:qrId" element={<CheckIn />} />
+          <Route path="*" element={
+            <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--canvas)' }}>
+              <Sidebar user={user} onLogout={handleLogout} />
+              <main style={{
+                flex: 1,
+                overflowY: 'auto',
+                padding: '32px',
+                minHeight: '100vh',
+                paddingBottom: '80px',
+              }}
+              className="main-content"
+              >
+                <Routes>
+                  <Route path="/" element={<Dashboard user={user} />} />
+                  <Route path="/dashboard" element={<Dashboard user={user} />} />
+                  <Route path="/create" element={
+                    ['admin', 'receptionist'].includes(user.role)
+                      ? <CreateQR />
+                      : <Navigate to="/dashboard" replace />
+                  } />
+                  <Route path="/users" element={
+                    user.role === 'admin'
+                      ? <AdminPanel user={user} />
+                      : <Navigate to="/dashboard" replace />
+                  } />
+                  <Route path="/about" element={<About />} />
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+              </main>
+            </div>
+          } />
+        </Routes>
+      )}
+    </ThemeContext.Provider>
   );
 }
 
