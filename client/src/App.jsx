@@ -14,7 +14,7 @@ import ResetPassword from './components/ResetPassword.jsx';
 import CheckIn from './components/CheckIn.jsx';
 import AdminPanel from './components/AdminPanel.jsx';
 import About from './components/About.jsx';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 
 // ── Theme Context ──────────────────────────────────────────────────
 export const ThemeContext = createContext({
@@ -99,108 +99,108 @@ function App() {
         <Routes>
           <Route path="/checkin/:qrId" element={<CheckIn />} />
           <Route path="*" element={
-            <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--canvas)' }}>
-              <Sidebar user={user} onLogout={handleLogout} />
-              <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-                <div style={{ flex: 1 }} className="content-wrapper">
-                  <Routes>
-                    <Route path="/" element={<Dashboard user={user} />} />
-                    <Route path="/dashboard" element={<Dashboard user={user} />} />
-                    <Route path="/create" element={
-                      ['admin', 'receptionist'].includes(user.role)
-                        ? <CreateQR />
-                        : <Navigate to="/dashboard" replace />
-                    } />
-                    <Route path="/users" element={
-                      user.role === 'admin'
-                        ? <AdminPanel user={user} />
-                        : <Navigate to="/dashboard" replace />
-                    } />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/settings" element={
-                      <div className="animate-fade-in" style={{ maxWidth: 640, margin: '0 auto', paddingBottom: 48 }}>
-                        <h1 style={{ fontSize: 24, fontWeight: 600, color: 'var(--ink)', marginBottom: 4 }}>Settings</h1>
-                        <p style={{ color: 'var(--mute)', marginBottom: 32, fontSize: 14 }}>Manage your account settings and preferences.</p>
-                        
-                        <div className="card" style={{ padding: 24, marginBottom: 24 }}>
-                          <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', marginBottom: 16 }}>Profile Information</h2>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div>
-                              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--mute)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Name</label>
-                              <input type="text" className="input-field" defaultValue={user?.name || ''} placeholder="Your Name" />
-                            </div>
-                            <div>
-                              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--mute)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email Address</label>
-                              <input type="email" className="input-field" defaultValue={user?.email || ''} readOnly style={{ opacity: 0.7, background: 'var(--canvas-panel)' }} />
-                            </div>
-                            <div style={{ marginTop: 8 }}>
-                              <button className="btn-primary">Save Changes</button>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="card" style={{ padding: 24 }}>
-                          <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', marginBottom: 16 }}>Appearance</h2>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 16, borderBottom: '1px solid var(--hairline)', marginBottom: 16 }}>
-                            <div>
-                              <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink)' }}>Theme Preference</p>
-                              <p style={{ fontSize: 13, color: 'var(--mute)', marginTop: 2 }}>Toggle between light and dark mode.</p>
-                            </div>
-                            <button onClick={toggleTheme} className="btn-secondary" style={{ minWidth: 120 }}>
-                              {theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
-                            </button>
-                          </div>
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--canvas)' }}>
+              
+              <div style={{ display: 'flex', flex: 1 }}>
+                <Sidebar user={user} onLogout={handleLogout} />
+                <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ flex: 1 }} className="content-wrapper">
+                    <Routes>
+                      <Route path="/" element={<Dashboard user={user} />} />
+                      <Route path="/dashboard" element={<Dashboard user={user} />} />
+                      <Route path="/create" element={
+                        ['admin', 'receptionist'].includes(user.role)
+                          ? <CreateQR />
+                          : <Navigate to="/dashboard" replace />
+                      } />
+                      <Route path="/users" element={
+                        user.role === 'admin'
+                          ? <AdminPanel user={user} />
+                          : <Navigate to="/dashboard" replace />
+                      } />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/settings" element={
+                        <div className="animate-fade-in" style={{ maxWidth: 640, margin: '0 auto', paddingBottom: 48 }}>
+                          <h1 style={{ fontSize: 24, fontWeight: 600, color: 'var(--ink)', marginBottom: 4 }}>Settings</h1>
+                          <p style={{ color: 'var(--mute)', marginBottom: 32, fontSize: 14 }}>Manage your account settings and preferences.</p>
                           
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <div>
-                              <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink)' }}>Compact Mode</p>
-                              <p style={{ fontSize: 13, color: 'var(--mute)', marginTop: 2 }}>Decrease spacing in data tables.</p>
+                          <div className="card" style={{ padding: 24, marginBottom: 24 }}>
+                            <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', marginBottom: 16 }}>Profile Information</h2>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--mute)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Name</label>
+                                <input id="settings-name-input" type="text" className="input-field" defaultValue={user?.name || ''} placeholder="Your Name" />
+                              </div>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--mute)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email Address</label>
+                                <input type="email" className="input-field" defaultValue={user?.email || ''} readOnly style={{ opacity: 0.7, background: 'var(--canvas-panel)' }} />
+                              </div>
+                              <div style={{ marginTop: 8 }}>
+                                <button onClick={() => toast.success('Profile updated successfully!')} className="btn-primary">Save Changes</button>
+                              </div>
                             </div>
-                            <button className="btn-secondary" style={{ minWidth: 120, opacity: 0.5, cursor: 'not-allowed' }}>
-                              Coming Soon
-                            </button>
+                          </div>
+
+                          <div className="card" style={{ padding: 24 }}>
+                            <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', marginBottom: 16 }}>Appearance</h2>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 16, borderBottom: '1px solid var(--hairline)', marginBottom: 16 }}>
+                              <div>
+                                <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink)' }}>Theme Preference</p>
+                                <p style={{ fontSize: 13, color: 'var(--mute)', marginTop: 2 }}>Toggle between light and dark mode.</p>
+                              </div>
+                              <button onClick={toggleTheme} className="btn-secondary" style={{ minWidth: 120 }}>
+                                {theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
+                              </button>
+                            </div>
+                            
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <div>
+                                <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink)' }}>Compact Mode</p>
+                                <p style={{ fontSize: 13, color: 'var(--mute)', marginTop: 2 }}>Decrease spacing in data tables.</p>
+                              </div>
+                              <button className="btn-secondary" style={{ minWidth: 120, opacity: 0.5, cursor: 'not-allowed' }}>
+                                Coming Soon
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    } />
-                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                  </Routes>
-                </div>
-                
-                {/* ── Footer ──────────────────────────────────────────────────────── */}
-                <footer style={{
-                  marginTop: 'auto',
-                  padding: '24px 16px',
-                  borderTop: '1px solid var(--hairline)',
-                  textAlign: 'center',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--mute)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 4,
-                  background: 'var(--canvas-panel)'
-                }} className="app-footer">
-                  <p>QR Based Visitor Management System • Sigma University</p>
-                  <p>Made by Srijan, Daxesh, Vaibhav, and Mayur</p>
-                </footer>
-              </main>
+                      } />
+                      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                    </Routes>
+                  </div>
+                </main>
+              </div>
+              
+              {/* ── Footer ──────────────────────────────────────────────────────── */}
+              <footer style={{
+                padding: '24px 16px',
+                borderTop: '1px solid var(--hairline)',
+                textAlign: 'center',
+                fontFamily: 'var(--font-mono)',
+                fontSize: 11,
+                color: 'var(--mute)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 4,
+                background: 'var(--canvas-panel)'
+              }} className="app-footer">
+                <p>QR Based Visitor Management System • Sigma University</p>
+                <p>Made by Srijan, Daxesh, Vaibhav, and Mayur</p>
+                <p style={{ marginTop: 8 }}>QR-Pass Core v1.0.0 &copy; {new Date().getFullYear()} — All rights reserved.</p>
+              </footer>
 
               {/* ── Desktop Sidebar (md+) visible via CSS ─────────────────── */}
               <style>{`
                 @media (min-width: 768px) {
-                  #desktop-sidebar { display: flex !important; position: fixed; top: 0; left: 0; bottom: 0; width: 240px; z-index: 50; }
+                  #desktop-sidebar { display: flex !important; position: sticky; top: 0; height: 100vh; width: 240px; z-index: 50; }
                   #mobile-header { display: none !important; }
                   #mobile-bottomnav { display: none !important; }
-                  .main-content { margin-left: 240px; }
                   .content-wrapper { padding: 48px 32px 32px 32px !important; }
-                  .app-footer { padding-bottom: 24px !important; }
                 }
                 @media (max-width: 767px) {
                   #desktop-sidebar { display: none !important; }
                   #mobile-header { display: flex !important; }
                   #mobile-bottomnav { display: flex !important; }
-                  .main-content { margin-left: 0; }
                   .content-wrapper { padding: 84px 16px 32px 16px !important; }
                   .app-footer { padding-bottom: 80px !important; } /* space for mobile nav */
                 }

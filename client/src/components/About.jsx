@@ -134,11 +134,6 @@ const About = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <div style={{ textAlign: 'center', marginTop: 48 }}>
-        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--mute)' }}>
-          QR-Pass Core v1.0.0 &copy; {new Date().getFullYear()} — All rights reserved.
-        </p>
       </div>
     </div>
   );
