@@ -101,28 +101,75 @@ function App() {
           <Route path="*" element={
             <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--canvas)' }}>
               <Sidebar user={user} onLogout={handleLogout} />
-              <main className="main-content" style={{ flex: 1, minHeight: '100vh' }}>
-                <Routes>
-                  <Route path="/" element={<Dashboard user={user} />} />
-                  <Route path="/dashboard" element={<Dashboard user={user} />} />
-                  <Route path="/create" element={
-                    ['admin', 'receptionist'].includes(user.role)
-                      ? <CreateQR />
-                      : <Navigate to="/dashboard" replace />
-                  } />
-                  <Route path="/users" element={
-                    user.role === 'admin'
-                      ? <AdminPanel user={user} />
-                      : <Navigate to="/dashboard" replace />
-                  } />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/settings" element={<div className="animate-fade-in" style={{maxWidth:600, margin: '0 auto', padding: '48px 0'}}><h1 style={{fontSize: 24, fontWeight: 600, color: 'var(--ink)'}}>Settings</h1><p style={{color: 'var(--mute)', marginTop: 8}}>User settings and preferences will be configured here.</p></div>} />
-                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                </Routes>
+              <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                <div style={{ flex: 1 }}>
+                  <Routes>
+                    <Route path="/" element={<Dashboard user={user} />} />
+                    <Route path="/dashboard" element={<Dashboard user={user} />} />
+                    <Route path="/create" element={
+                      ['admin', 'receptionist'].includes(user.role)
+                        ? <CreateQR />
+                        : <Navigate to="/dashboard" replace />
+                    } />
+                    <Route path="/users" element={
+                      user.role === 'admin'
+                        ? <AdminPanel user={user} />
+                        : <Navigate to="/dashboard" replace />
+                    } />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/settings" element={
+                      <div className="animate-fade-in" style={{ maxWidth: 640, margin: '0 auto', paddingBottom: 48 }}>
+                        <h1 style={{ fontSize: 24, fontWeight: 600, color: 'var(--ink)', marginBottom: 4 }}>Settings</h1>
+                        <p style={{ color: 'var(--mute)', marginBottom: 32, fontSize: 14 }}>Manage your account settings and preferences.</p>
+                        
+                        <div className="card" style={{ padding: 24, marginBottom: 24 }}>
+                          <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', marginBottom: 16 }}>Profile Information</h2>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--mute)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Name</label>
+                              <input type="text" className="input-field" defaultValue={user?.name || ''} placeholder="Your Name" />
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--mute)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email Address</label>
+                              <input type="email" className="input-field" defaultValue={user?.email || ''} readOnly style={{ opacity: 0.7, background: 'var(--canvas-panel)' }} />
+                            </div>
+                            <div style={{ marginTop: 8 }}>
+                              <button className="btn-primary">Save Changes</button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="card" style={{ padding: 24 }}>
+                          <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', marginBottom: 16 }}>Appearance</h2>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 16, borderBottom: '1px solid var(--hairline)', marginBottom: 16 }}>
+                            <div>
+                              <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink)' }}>Theme Preference</p>
+                              <p style={{ fontSize: 13, color: 'var(--mute)', marginTop: 2 }}>Toggle between light and dark mode.</p>
+                            </div>
+                            <button onClick={toggleTheme} className="btn-secondary" style={{ minWidth: 120 }}>
+                              {theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
+                            </button>
+                          </div>
+                          
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div>
+                              <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink)' }}>Compact Mode</p>
+                              <p style={{ fontSize: 13, color: 'var(--mute)', marginTop: 2 }}>Decrease spacing in data tables.</p>
+                            </div>
+                            <button className="btn-secondary" style={{ minWidth: 120, opacity: 0.5, cursor: 'not-allowed' }}>
+                              Coming Soon
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    } />
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                  </Routes>
+                </div>
                 
                 {/* ── Footer ──────────────────────────────────────────────────────── */}
                 <footer style={{
-                  marginTop: 64,
+                  marginTop: 'auto',
                   paddingTop: 24,
                   borderTop: '1px solid var(--hairline)',
                   textAlign: 'center',
