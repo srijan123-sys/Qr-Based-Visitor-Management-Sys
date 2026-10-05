@@ -15,6 +15,7 @@ import CheckIn from './components/CheckIn.jsx';
 import AdminPanel from './components/AdminPanel.jsx';
 import About from './components/About.jsx';
 import { Toaster, toast } from 'react-hot-toast';
+import API from './api/axios.js';
 
 // ── Theme Context ──────────────────────────────────────────────────
 export const ThemeContext = createContext({
@@ -64,6 +65,26 @@ function App() {
     setUser(null);
     localStorage.removeItem('qr_user');
     localStorage.removeItem('qr_token');
+  };
+
+  const handleUpdateProfile = async () => {
+    const newName = document.getElementById('settings-name-input').value;
+    if (!newName.trim()) return toast.error('Name cannot be empty');
+    
+    try {
+      const res = await API.put('/auth/updateprofile', { name: newName });
+      const data = res.data;
+      if (data.success) {
+        setUser(data.data);
+        localStorage.setItem('qr_user', JSON.stringify(data.data));
+        localStorage.setItem('qr_token', data.data.token);
+        toast.success('Profile updated successfully!');
+      } else {
+        toast.error(data.message || 'Update failed');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Network error');
+    }
   };
 
   if (loading) {
@@ -137,7 +158,7 @@ function App() {
                                 <input type="email" className="input-field" defaultValue={user?.email || ''} readOnly style={{ opacity: 0.7, background: 'var(--canvas-panel)' }} />
                               </div>
                               <div style={{ marginTop: 8 }}>
-                                <button onClick={() => toast.success('Profile updated successfully!')} className="btn-primary">Save Changes</button>
+                                <button onClick={handleUpdateProfile} className="btn-primary">Save Changes</button>
                               </div>
                             </div>
                           </div>

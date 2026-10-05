@@ -203,4 +203,37 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { signup, login, forgotPassword, resetPassword };
+// ────────────────────────────────────────────────
+//  PUT /api/auth/updateprofile
+// ────────────────────────────────────────────────
+const updateProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (req.body.name) {
+      user.name = req.body.name;
+    }
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      success: true,
+      data: {
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        token: generateToken(updatedUser._id),
+      },
+    });
+  } catch (err) {
+    logger.error('UPDATE PROFILE', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+module.exports = { signup, login, forgotPassword, resetPassword, updateProfile };
