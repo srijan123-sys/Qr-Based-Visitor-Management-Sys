@@ -4,7 +4,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { FiUsers, FiGrid, FiLogOut, FiShield, FiInfo, FiSun, FiMoon, FiMenu, FiX, FiSettings, FiUser, FiChevronUp } from 'react-icons/fi';
+import { FiUsers, FiGrid, FiLogOut, FiShield, FiInfo, FiSun, FiMoon, FiMenu, FiX, FiSettings, FiChevronUp } from 'react-icons/fi';
 import { HiOutlineQrcode } from 'react-icons/hi';
 import { useTheme } from '../App.jsx';
 
@@ -52,7 +52,7 @@ const Sidebar = ({ user, onLogout }) => {
 
   const items = navItems(user);
 
-  const SidebarContent = ({ onClose }) => (
+  const renderContent = (isMobile, onClose) => (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
       {/* Brand */}
       <div style={{
@@ -77,7 +77,7 @@ const Sidebar = ({ user, onLogout }) => {
             <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--mute)', letterSpacing: '0.05em', textTransform: 'uppercase', marginTop: 1 }}>Visitor Management</p>
           </div>
         </div>
-        {onClose && (
+        {isMobile && onClose && (
           <button onClick={onClose} className="btn-ghost-sm" style={{ padding: '0 6px', width: 28, height: 28 }}>
             <FiX size={14} />
           </button>
@@ -93,7 +93,7 @@ const Sidebar = ({ user, onLogout }) => {
           <NavLink
             key={to}
             to={to}
-            onClick={onClose}
+            onClick={isMobile ? onClose : undefined}
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             style={{ justifyContent: 'space-between' }}
           >
@@ -116,7 +116,7 @@ const Sidebar = ({ user, onLogout }) => {
       </nav>
 
       {/* Footer User Profile Menu */}
-      <div style={{ padding: '12px 8px', borderTop: '1px solid var(--hairline)', position: 'relative' }} ref={userMenuRef}>
+      <div style={{ padding: '12px 8px', borderTop: '1px solid var(--hairline)', position: 'relative' }} ref={isMobile ? null : userMenuRef}>
         
         {/* Popover Menu */}
         {userMenuOpen && (
@@ -138,7 +138,7 @@ const Sidebar = ({ user, onLogout }) => {
             </div>
             <div style={{ padding: 4 }}>
               <button 
-                onClick={() => { navigate('/settings'); setUserMenuOpen(false); }}
+                onClick={() => { navigate('/settings'); setUserMenuOpen(false); if (isMobile) onClose(); }}
                 style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'transparent', border: 'none', color: 'var(--ink)', fontSize: 13, cursor: 'pointer', textAlign: 'left', borderRadius: 4 }}
                 onMouseOver={e => e.currentTarget.style.backgroundColor = 'var(--canvas-panel)'}
                 onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -147,7 +147,7 @@ const Sidebar = ({ user, onLogout }) => {
                 User Settings
               </button>
               <button 
-                onClick={(e) => { e.stopPropagation(); toggleTheme(); }}
+                onClick={() => { toggleTheme(); }}
                 style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'transparent', border: 'none', color: 'var(--ink)', fontSize: 13, cursor: 'pointer', textAlign: 'left', borderRadius: 4 }}
                 onMouseOver={e => e.currentTarget.style.backgroundColor = 'var(--canvas-panel)'}
                 onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -211,7 +211,7 @@ const Sidebar = ({ user, onLogout }) => {
   return (
     <>
       <aside className="sidebar" style={{ display: 'none' }} id="desktop-sidebar">
-        <SidebarContent />
+        {renderContent(false)}
       </aside>
 
       <header id="mobile-header" style={{
@@ -245,7 +245,7 @@ const Sidebar = ({ user, onLogout }) => {
         transform: mobileOpen ? 'translateX(0)' : 'translateX(-100%)',
         transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
-        <SidebarContent onClose={() => setMobileOpen(false)} />
+        {renderContent(true, () => setMobileOpen(false))}
       </div>
 
       <nav id="mobile-bottomnav" style={{

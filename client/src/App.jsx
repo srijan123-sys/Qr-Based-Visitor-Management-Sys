@@ -119,6 +119,23 @@ function App() {
                   <Route path="/settings" element={<div className="animate-fade-in" style={{maxWidth:600, margin: '0 auto', padding: '48px 0'}}><h1 style={{fontSize: 24, fontWeight: 600, color: 'var(--ink)'}}>Settings</h1><p style={{color: 'var(--mute)', marginTop: 8}}>User settings and preferences will be configured here.</p></div>} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
+                
+                {/* ── Footer ──────────────────────────────────────────────────────── */}
+                <footer style={{
+                  marginTop: 64,
+                  paddingTop: 24,
+                  borderTop: '1px solid var(--hairline)',
+                  textAlign: 'center',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 11,
+                  color: 'var(--mute)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4
+                }}>
+                  <p>QR Based Visitor Management System • Sigma University</p>
+                  <p>Made by Srijan, Daxesh, Vaibhav, and Mayur</p>
+                </footer>
               </main>
 
               {/* ── Desktop Sidebar (md+) visible via CSS ─────────────────── */}
