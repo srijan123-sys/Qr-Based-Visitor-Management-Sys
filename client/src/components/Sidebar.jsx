@@ -90,33 +90,36 @@ const Sidebar = ({ user, onLogout }) => {
 
       {/* Nav */}
       <nav style={{ flex: 1, padding: '12px 8px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--mute)', padding: '6px 10px', marginBottom: 4 }}>
-          Operations
-        </div>
-        {items.map(({ to, label, icon: Icon, live, tag }) => (
-          <NavLink
-            key={to}
-            to={to}
-            onClick={isMobile ? onClose : undefined}
-            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
-            style={{ justifyContent: 'space-between' }}
-          >
-            <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <Icon size={15} style={{ flexShrink: 0 }} />
-              {label}
-            </span>
-            {live && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#0070f3' }} className="pulse" />
-              </span>
-            )}
-            {tag && (
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, padding: '1px 6px', borderRadius: 4, background: 'var(--canvas-panel)', color: 'var(--mute)', border: '1px solid var(--hairline)' }}>
-                {tag}
-              </span>
-            )}
-          </NavLink>
-        ))}
+        {!isMobile && (
+          <>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--mute)', padding: '6px 10px', marginBottom: 4 }}>
+              Operations
+            </div>
+            {items.map(({ to, label, icon: Icon, live, tag }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+                style={{ justifyContent: 'space-between' }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Icon size={15} style={{ flexShrink: 0 }} />
+                  {label}
+                </span>
+                {live && (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#0070f3' }} className="pulse" />
+                  </span>
+                )}
+                {tag && (
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, padding: '1px 6px', borderRadius: 4, background: 'var(--canvas-panel)', color: 'var(--mute)', border: '1px solid var(--hairline)' }}>
+                    {tag}
+                  </span>
+                )}
+              </NavLink>
+            ))}
+          </>
+        )}
       </nav>
 
       {/* Footer User Profile Menu */}
@@ -252,7 +255,34 @@ const Sidebar = ({ user, onLogout }) => {
       }}>
         {renderContent(true, () => setMobileOpen(false))}
       </div>
-
+      
+      <nav id="mobile-bottomnav" style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40,
+        background: 'var(--canvas)', borderTop: '1px solid var(--hairline)', display: 'none',
+        flexDirection: 'column'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', padding: '8px 0' }}>
+          {items.map(({ to, label, icon: Icon, live }) => (
+            <NavLink
+              key={to} to={to}
+              style={({ isActive }) => ({
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '4px 12px',
+                borderRadius: 6, fontSize: 10, fontWeight: 500, fontFamily: 'var(--font-sans)',
+                color: isActive ? 'var(--ink)' : 'var(--mute)', textDecoration: 'none',
+              })}
+            >
+              <div style={{ position: 'relative' }}>
+                <Icon size={18} />
+                {live && <span style={{ position: 'absolute', top: -2, right: -2, width: 5, height: 5, borderRadius: '50%', background: '#0070f3' }} />}
+              </div>
+              <span>{label}</span>
+            </NavLink>
+          ))}
+        </div>
+        <div style={{ textAlign: 'center', paddingBottom: '6px', fontSize: '9px', fontFamily: 'var(--font-mono)', color: 'var(--mute)' }}>
+          QR-Pass Core v1.0.0 &copy; {new Date().getFullYear()} — All rights reserved.
+        </div>
+      </nav>
     </>
   );
 };

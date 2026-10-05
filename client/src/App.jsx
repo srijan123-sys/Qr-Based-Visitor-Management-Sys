@@ -225,9 +225,9 @@ function App() {
                 @media (max-width: 767px) {
                   #desktop-sidebar { display: none !important; }
                   #mobile-header { display: flex !important; }
-                  .content-wrapper { padding: 84px 16px 32px 16px !important; }
-                  .app-footer { flex-direction: column !important; text-align: center !important; gap: 12px; }
-                  .app-footer > div { text-align: center !important; }
+                  #mobile-bottomnav { display: flex !important; }
+                  .content-wrapper { padding: 84px 16px 84px 16px !important; }
+                  .app-footer { display: none !important; }
                 }
               `}</style>
             </div>

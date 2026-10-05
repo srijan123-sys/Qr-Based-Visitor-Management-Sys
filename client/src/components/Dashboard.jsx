@@ -222,7 +222,7 @@ const Dashboard = ({ user }) => {
           </div>
           <p style={{ fontSize: 13, color: 'var(--mute)' }}>Real-time front-desk access control & digital security log.</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, background: 'var(--canvas-panel)', border: '1px solid var(--hairline)', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--mute)' }}>
             <FiClock /> {currentTime.toLocaleTimeString()}
           </div>
