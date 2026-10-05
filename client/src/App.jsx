@@ -116,6 +116,7 @@ function App() {
                       : <Navigate to="/dashboard" replace />
                   } />
                   <Route path="/about" element={<About />} />
+                  <Route path="/settings" element={<div className="animate-fade-in" style={{maxWidth:600, margin: '0 auto', padding: '48px 0'}}><h1 style={{fontSize: 24, fontWeight: 600, color: 'var(--ink)'}}>Settings</h1><p style={{color: 'var(--mute)', marginTop: 8}}>User settings and preferences will be configured here.</p></div>} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </main>
@@ -123,7 +124,7 @@ function App() {
               {/* ── Desktop Sidebar (md+) visible via CSS ─────────────────── */}
               <style>{`
                 @media (min-width: 768px) {
-                  #desktop-sidebar { display: flex !important; position: fixed; top: 0; left: 0; bottom: 0; width: 240px; }
+                  #desktop-sidebar { display: flex !important; position: fixed; top: 0; left: 0; bottom: 0; width: 240px; z-index: 50; }
                   #mobile-header { display: none !important; }
                   #mobile-bottomnav { display: none !important; }
                   .main-content { margin-left: 240px; padding: 48px 32px 80px 32px !important; }

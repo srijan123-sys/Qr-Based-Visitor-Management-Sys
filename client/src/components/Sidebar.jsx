@@ -118,51 +118,52 @@ const Sidebar = ({ user, onLogout }) => {
       {/* Footer User Profile Menu */}
       <div style={{ padding: '12px 8px', borderTop: '1px solid var(--hairline)', position: 'relative' }} ref={userMenuRef}>
         
-        {/* Settings / Profile Modal */}
+        {/* Popover Menu */}
         {userMenuOpen && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} onClick={() => setUserMenuOpen(false)}>
-            <div className="card animate-fade-in" style={{ width: 320, padding: 24, position: 'relative' }} onClick={e => e.stopPropagation()}>
-              <button onClick={() => setUserMenuOpen(false)} style={{ position: 'absolute', top: 12, right: 12, background: 'none', border: 'none', color: 'var(--mute)', cursor: 'pointer' }}>
-                <FiX size={18} />
+          <div className="animate-fade-in" style={{
+            position: 'absolute',
+            bottom: 'calc(100% + 8px)',
+            left: 8,
+            right: 8,
+            background: 'var(--canvas-elevated)',
+            border: '1px solid var(--hairline)',
+            borderRadius: 8,
+            boxShadow: 'var(--shadow-float)',
+            overflow: 'hidden',
+            zIndex: 100,
+          }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--hairline)' }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{user?.name}</p>
+              <p style={{ fontSize: 12, color: 'var(--mute)' }}>{user?.email || 'Receptionist'}</p>
+            </div>
+            <div style={{ padding: 4 }}>
+              <button 
+                onClick={() => { navigate('/settings'); setUserMenuOpen(false); }}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'transparent', border: 'none', color: 'var(--ink)', fontSize: 13, cursor: 'pointer', textAlign: 'left', borderRadius: 4 }}
+                onMouseOver={e => e.currentTarget.style.backgroundColor = 'var(--canvas-panel)'}
+                onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                <FiSettings size={14} />
+                User Settings
               </button>
-              
-              <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--ink)', marginBottom: 16 }}>Settings</h3>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-                <div style={{ width: 40, height: 40, borderRadius: 8, background: 'var(--ink)', color: 'var(--canvas)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 600 }}>
-                  {user?.name?.charAt(0).toUpperCase() || 'U'}
-                </div>
-                <div>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>{user?.name}</p>
-                  <p style={{ fontSize: 12, color: 'var(--mute)' }}>{user?.role?.toUpperCase()}</p>
-                </div>
-              </div>
-
-              <div style={{ borderTop: '1px solid var(--hairline)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>
-                  <span style={{ fontSize: 13, color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {theme === 'dark' ? <FiMoon size={14} /> : <FiSun size={14} />} Theme Appearance
-                  </span>
-                  <button 
-                    onClick={() => { toggleTheme(); }}
-                    className="btn-secondary" style={{ height: 28, fontSize: 12, padding: '0 12px' }}
-                  >
-                    {theme === 'dark' ? 'Dark' : 'Light'}
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderTop: '1px solid var(--hairline)' }}>
-                  <span style={{ fontSize: 13, color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <FiLogOut size={14} /> Account Session
-                  </span>
-                  <button 
-                    onClick={handleLogoutClick}
-                    className="btn-danger" style={{ height: 28, fontSize: 12, padding: '0 12px' }}
-                  >
-                    Sign Out
-                  </button>
-                </div>
-              </div>
+              <button 
+                onClick={(e) => { e.stopPropagation(); toggleTheme(); }}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'transparent', border: 'none', color: 'var(--ink)', fontSize: 13, cursor: 'pointer', textAlign: 'left', borderRadius: 4 }}
+                onMouseOver={e => e.currentTarget.style.backgroundColor = 'var(--canvas-panel)'}
+                onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                {theme === 'dark' ? <FiSun size={14} /> : <FiMoon size={14} />}
+                Theme: {theme === 'dark' ? 'Dark' : 'Light'}
+              </button>
+              <button 
+                onClick={handleLogoutClick}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'transparent', border: 'none', color: 'var(--error)', fontSize: 13, cursor: 'pointer', textAlign: 'left', borderRadius: 4 }}
+                onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgba(255, 68, 68, 0.1)'}
+                onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                <FiLogOut size={14} />
+                Sign Out
+              </button>
             </div>
           </div>
         )}
