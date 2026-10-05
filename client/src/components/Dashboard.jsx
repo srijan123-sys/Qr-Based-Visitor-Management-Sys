@@ -239,23 +239,23 @@ const Dashboard = ({ user }) => {
       </div>
 
       {/* Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16, marginBottom: 24 }}>
-        <div className="card" style={{ padding: 20, borderTop: '2px solid var(--link)' }}>
-          <p className="text-eyebrow" style={{ marginBottom: 4 }}>Currently In Building</p>
-          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 32, fontWeight: 700, color: 'var(--ink)', margin: '8px 0' }}>{activeVisitors.length}</h3>
-          <p style={{ fontSize: 12, color: 'var(--mute)', display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+        <div className="card" style={{ padding: 24, borderTop: '2px solid var(--link)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', aspectRatio: '1/1' }}>
+          <p className="text-eyebrow" style={{ marginBottom: 4, textAlign: 'center' }}>Currently In Building</p>
+          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 40, fontWeight: 700, color: 'var(--ink)', margin: '16px 0', textAlign: 'center' }}>{activeVisitors.length}</h3>
+          <p style={{ fontSize: 12, color: 'var(--mute)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--link)' }}></span> Active on premises
           </p>
         </div>
-        <div className="card" style={{ padding: 20, borderTop: '2px solid #f5a623' }}>
-          <p className="text-eyebrow" style={{ marginBottom: 4 }}>Total Visitors Today</p>
-          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 32, fontWeight: 700, color: 'var(--ink)', margin: '8px 0' }}>{totalToday.length}</h3>
-          <p style={{ fontSize: 12, color: 'var(--mute)' }}>Registered today</p>
+        <div className="card" style={{ padding: 24, borderTop: '2px solid #f5a623', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', aspectRatio: '1/1' }}>
+          <p className="text-eyebrow" style={{ marginBottom: 4, textAlign: 'center' }}>Total Visitors Today</p>
+          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 40, fontWeight: 700, color: 'var(--ink)', margin: '16px 0', textAlign: 'center' }}>{totalToday.length}</h3>
+          <p style={{ fontSize: 12, color: 'var(--mute)', textAlign: 'center' }}>Registered today</p>
         </div>
-        <div className="card" style={{ padding: 20, borderTop: '2px solid #50e3c2' }}>
-          <p className="text-eyebrow" style={{ marginBottom: 4 }}>Checked Out Today</p>
-          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 32, fontWeight: 700, color: 'var(--ink)', margin: '8px 0' }}>{checkedOutVisitors.length}</h3>
-          <p style={{ fontSize: 12, color: 'var(--mute)' }}>Safely departed</p>
+        <div className="card" style={{ padding: 24, borderTop: '2px solid #50e3c2', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', aspectRatio: '1/1' }}>
+          <p className="text-eyebrow" style={{ marginBottom: 4, textAlign: 'center' }}>Checked Out Today</p>
+          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 40, fontWeight: 700, color: 'var(--ink)', margin: '16px 0', textAlign: 'center' }}>{checkedOutVisitors.length}</h3>
+          <p style={{ fontSize: 12, color: 'var(--mute)', textAlign: 'center' }}>Safely departed</p>
         </div>
       </div>
 

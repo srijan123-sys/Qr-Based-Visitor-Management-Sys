@@ -255,35 +255,41 @@ const Sidebar = ({ user, onLogout }) => {
       }}>
         {renderContent(true, () => setMobileOpen(false))}
       </div>
-      
-      <nav id="mobile-bottomnav" style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40,
-        background: 'var(--canvas)', borderTop: '1px solid var(--hairline)', display: 'none',
-        flexDirection: 'column'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', padding: '8px 0' }}>
-          {items.map(({ to, label, icon: Icon, live }) => (
-            <NavLink
-              key={to} to={to}
-              style={({ isActive }) => ({
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '4px 12px',
-                borderRadius: 6, fontSize: 10, fontWeight: 500, fontFamily: 'var(--font-sans)',
-                color: isActive ? 'var(--ink)' : 'var(--mute)', textDecoration: 'none',
-              })}
-            >
-              <div style={{ position: 'relative' }}>
-                <Icon size={18} />
-                {live && <span style={{ position: 'absolute', top: -2, right: -2, width: 5, height: 5, borderRadius: '50%', background: '#0070f3' }} />}
-              </div>
-              <span>{label}</span>
-            </NavLink>
-          ))}
-        </div>
-        <div style={{ textAlign: 'center', paddingBottom: '6px', fontSize: '9px', fontFamily: 'var(--font-mono)', color: 'var(--mute)' }}>
-          QR-Pass Core v1.0.0 &copy; {new Date().getFullYear()} — All rights reserved.
-        </div>
-      </nav>
     </>
+  );
+};
+
+export const MobileFooterNav = ({ user }) => {
+  const items = navItems(user);
+  return (
+    <nav id="mobile-bottomnav" style={{
+      background: 'var(--canvas)', borderTop: '1px solid var(--hairline)', display: 'none',
+      flexDirection: 'column', width: '100%', marginTop: 'auto'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', padding: '16px 0 8px 0' }}>
+        {items.map(({ to, label, icon: Icon, live }) => (
+          <NavLink
+            key={to} to={to}
+            style={({ isActive }) => ({
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '4px 12px',
+              borderRadius: 6, fontSize: 11, fontWeight: 500, fontFamily: 'var(--font-sans)',
+              color: isActive ? 'var(--ink)' : 'var(--mute)', textDecoration: 'none',
+            })}
+          >
+            <div style={{ position: 'relative' }}>
+              <Icon size={20} />
+              {live && <span style={{ position: 'absolute', top: -2, right: -2, width: 6, height: 6, borderRadius: '50%', background: '#0070f3' }} />}
+            </div>
+            <span>{label}</span>
+          </NavLink>
+        ))}
+      </div>
+      <div style={{ textAlign: 'center', paddingBottom: '24px', paddingTop: '16px', fontSize: '10px', fontFamily: 'var(--font-mono)', color: 'var(--mute)' }}>
+        QR Based Visitor Management System • Sigma University<br/>
+        Made by Srijan, Daxesh, Vaibhav, and Mayur<br/>
+        QR-Pass Core v1.0.0 &copy; {new Date().getFullYear()} — All rights reserved.
+      </div>
+    </nav>
   );
 };
 

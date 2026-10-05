@@ -4,7 +4,7 @@
 
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect, createContext, useContext } from 'react';
-import Sidebar from './components/Sidebar.jsx';
+import Sidebar, { MobileFooterNav } from './components/Sidebar.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import CreateQR from './components/CreateQR.jsx';
 import Login from './components/Login.jsx';
@@ -193,6 +193,8 @@ function App() {
                 </main>
               </div>
               
+              <MobileFooterNav user={user} />
+              
               {/* ── Footer ──────────────────────────────────────────────────────── */}
               <footer style={{
                 flexShrink: 0,
@@ -226,7 +228,7 @@ function App() {
                   #desktop-sidebar { display: none !important; }
                   #mobile-header { display: flex !important; }
                   #mobile-bottomnav { display: flex !important; }
-                  .content-wrapper { padding: 84px 16px 84px 16px !important; }
+                  .content-wrapper { padding: 72px 16px 24px 16px !important; }
                   .app-footer { display: none !important; }
                 }
               `}</style>
