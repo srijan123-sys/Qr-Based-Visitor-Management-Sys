@@ -163,8 +163,8 @@ const Dashboard = ({ user }) => {
   // Basic User view
   if (user?.role === 'user') {
     return (
-      <div className="animate-fade-in" style={{ maxWidth: 860, margin: '0 auto', paddingBottom: 64 }}>
-        <div style={{ borderBottom: '1px solid var(--hairline)', paddingBottom: 16, marginBottom: 24 }}>
+      <div style={{ maxWidth: 860, margin: '0 auto', paddingBottom: 64 }}>
+        <div className="animate-fade-in" style={{ borderBottom: '1px solid var(--hairline)', paddingBottom: 16, marginBottom: 24 }}>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: 'var(--ink)' }}>My Active Passes</h1>
           <p style={{ fontSize: 13, color: 'var(--mute)' }}>View your check-ins and independently check out.</p>
         </div>
@@ -208,9 +208,9 @@ const Dashboard = ({ user }) => {
 
   // Admin / Receptionist View
   return (
-    <div className="animate-fade-in" style={{ maxWidth: 1200, margin: '0 auto', paddingBottom: 64 }}>
+    <div style={{ maxWidth: 1200, margin: '0 auto', paddingBottom: 64 }}>
       {/* Top Banner */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', justifyContent: 'space-between', paddingBottom: 20, borderBottom: '1px solid var(--hairline)', marginBottom: 24 }}>
+      <div className="animate-fade-in" style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', justifyContent: 'space-between', paddingBottom: 20, borderBottom: '1px solid var(--hairline)', marginBottom: 24 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
             <h1 style={{ fontFamily: 'var(--font-sans)', fontSize: 28, fontWeight: 600, letterSpacing: '-1px', color: 'var(--ink)' }}>
