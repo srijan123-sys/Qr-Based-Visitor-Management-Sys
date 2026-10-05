@@ -1,3 +1,7 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  CreateQR.jsx — Vercel Geist Style
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'react-hot-toast';
@@ -9,8 +13,7 @@ import {
   FiExternalLink, 
   FiRefreshCw, 
   FiMapPin, 
-  FiShield,
-  FiSmartphone
+  FiShield
 } from 'react-icons/fi';
 
 const CreateQR = () => {
@@ -71,126 +74,108 @@ const CreateQR = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-fade-in pb-12">
-      {/* Header */}
-      <div className="pb-4 border-b border-white/[0.06]">
-        <div className="flex items-center gap-2 mb-1">
-          <h1 className="text-2xl lg:text-3xl font-bold text-white tracking-tight">
+    <div className="animate-fade-in" style={{ maxWidth: 1024, margin: '0 auto', paddingBottom: 64 }}>
+      {/* Page Header */}
+      <div style={{ marginBottom: 32, borderBottom: '1px solid var(--hairline)', paddingBottom: 24 }}>
+        <p className="text-eyebrow" style={{ marginBottom: 8 }}>Setup</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+          <h1 style={{ fontFamily: 'var(--font-sans)', fontSize: 28, fontWeight: 600, letterSpacing: '-1px', color: 'var(--ink)', lineHeight: '36px' }}>
             Reception Desk QR Code
           </h1>
-          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/25">
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'var(--canvas-panel)', border: '1px solid var(--hairline)', color: 'var(--ink)', fontWeight: 600 }}>
             FRONT-DESK
           </span>
         </div>
-        <p className="text-sm text-zinc-400">
+        <p className="text-body-md">
           Place this dynamic QR code at your building entrance or lobby desk for contactless visitor check-ins.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Desk Configuration & Controls (5 cols) */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="card space-y-5 border border-white/[0.08]">
-            <div className="flex items-center gap-3 pb-3 border-b border-white/[0.06]">
-              <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+        {/* Left Column: Desk Configuration & Controls */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div className="card" style={{ padding: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingBottom: 16, borderBottom: '1px solid var(--hairline)', marginBottom: 20 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--canvas)', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink)' }}>
                 <FiMapPin />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">Desk Settings</h3>
-                <p className="text-xs text-zinc-400">Customize the reception checkpoint</p>
+                <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.3px' }}>Desk Settings</h3>
+                <p style={{ fontSize: 12, color: 'var(--mute)' }}>Customize the reception checkpoint</p>
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                Location / Station Label
-              </label>
-              <input
-                type="text"
-                value={deskName}
-                onChange={(e) => setDeskName(e.target.value)}
-                placeholder="e.g. Main Lobby Desk"
-                className="input-field text-sm"
-              />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Station Code ID
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)', marginBottom: 6 }}>
+                  Location / Station Label
                 </label>
-                <button
-                  onClick={generateNewId}
-                  className="text-xs font-mono text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
-                >
-                  <FiRefreshCw className="text-[10px]" />
-                  <span>Regenerate ID</span>
-                </button>
-              </div>
-              <input
-                type="text"
-                value={qrId}
-                onChange={(e) => setQrId(e.target.value)}
-                className="input-field text-sm font-mono"
-              />
-            </div>
-
-            {/* Direct Link Box */}
-            <div className="p-3.5 bg-white/[0.03] border border-white/[0.08] rounded-xl space-y-2">
-              <span className="text-[11px] font-mono text-zinc-400 block">
-                Direct Scan / Public Form URL:
-              </span>
-              <div className="flex items-center gap-2">
                 <input
                   type="text"
-                  readOnly
-                  value={checkInUrl}
-                  className="input-field !py-1.5 !px-2.5 text-xs font-mono !bg-black/40 text-cyan-300 select-all"
+                  value={deskName}
+                  onChange={(e) => setDeskName(e.target.value)}
+                  placeholder="e.g. Main Lobby Desk"
+                  className="input-field"
                 />
-                <button
-                  onClick={handleCopyLink}
-                  className="btn-secondary !p-2 shrink-0"
-                  title="Copy link"
-                >
-                  {copied ? <FiCheck className="text-emerald-400" /> : <FiCopy />}
-                </button>
-                <a
-                  href={checkInUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-secondary !p-2 shrink-0 text-cyan-400"
-                  title="Open test check-in"
-                >
-                  <FiExternalLink />
-                </a>
               </div>
-            </div>
 
-            <div className="pt-2 flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={handleDownloadPNG}
-                className="btn-primary flex-1 shadow-lg shadow-orange-500/20"
-              >
-                <FiDownload />
-                <span>Download HD PNG</span>
-              </button>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <label style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)' }}>
+                    Station Code ID
+                  </label>
+                  <button onClick={generateNewId} style={{ display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--link)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                    <FiRefreshCw size={10} /> Regenerate ID
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={qrId}
+                  onChange={(e) => setQrId(e.target.value)}
+                  className="input-field"
+                  style={{ fontFamily: 'var(--font-mono)' }}
+                />
+              </div>
 
-              <button
-                onClick={handlePrint}
-                className="btn-secondary flex-1"
-              >
-                <FiPrinter />
-                <span>Print Stand Sign</span>
-              </button>
+              {/* Direct Link Box */}
+              <div style={{ padding: 12, background: 'var(--canvas-panel)', border: '1px solid var(--hairline)', borderRadius: 8 }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--mute)', display: 'block', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Direct Scan / Public Form URL:
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <input
+                    type="text"
+                    readOnly
+                    value={checkInUrl}
+                    className="input-field"
+                    style={{ fontFamily: 'var(--font-mono)', fontSize: 11, height: 32, padding: '0 8px', color: 'var(--ink)' }}
+                  />
+                  <button onClick={handleCopyLink} className="btn-secondary" style={{ width: 32, height: 32, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} title="Copy link">
+                    {copied ? <FiCheck color="var(--link)" /> : <FiCopy />}
+                  </button>
+                  <a href={checkInUrl} target="_blank" rel="noreferrer" className="btn-secondary" style={{ width: 32, height: 32, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, textDecoration: 'none' }} title="Open test check-in">
+                    <FiExternalLink />
+                  </a>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                <button onClick={handleDownloadPNG} className="btn-primary" style={{ flex: 1, justifyContent: 'center', height: 36, fontSize: 13 }}>
+                  <FiDownload /> Download HD PNG
+                </button>
+                <button onClick={handlePrint} className="btn-secondary" style={{ flex: 1, justifyContent: 'center', height: 36, fontSize: 13 }}>
+                  <FiPrinter /> Print Stand Sign
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Tips Card */}
-          <div className="p-4 rounded-xl bg-cyan-500/[0.04] border border-cyan-500/20 flex gap-3">
-            <FiShield className="text-cyan-400 text-lg shrink-0 mt-0.5" />
-            <div className="text-xs text-zinc-300 space-y-1 leading-relaxed">
-              <p className="font-semibold text-cyan-300">How it works for visitors:</p>
-              <p className="text-zinc-400">
+          <div style={{ padding: 16, borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--canvas-panel)', display: 'flex', gap: 12 }}>
+            <FiShield style={{ color: 'var(--ink)', flexShrink: 0, marginTop: 2 }} />
+            <div>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 4 }}>How it works for visitors:</p>
+              <p style={{ fontSize: 13, color: 'var(--mute)', lineHeight: '20px' }}>
                 Visitors scan this QR code with their default smartphone camera (no app download needed). 
                 Once registered, their check-in appears live in your dashboard.
               </p>
@@ -198,57 +183,79 @@ const CreateQR = () => {
           </div>
         </div>
 
-        {/* Right Column: Stand Sign Preview (7 cols) */}
-        <div className="lg:col-span-7 flex flex-col items-center">
-          <div className="w-full max-w-md bg-gradient-to-b from-[#1E1E2F] to-[#12121E] border border-white/[0.12] rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-2xl relative overflow-hidden text-center">
-            {/* Ambient Background Glow */}
-            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
-
+        {/* Right Column: Stand Sign Preview */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
+          <div style={{ 
+            width: '100%', 
+            maxWidth: 420, 
+            background: 'var(--canvas)', 
+            border: '1px solid var(--hairline)', 
+            borderRadius: 16, 
+            padding: 32, 
+            textAlign: 'center',
+            boxShadow: 'var(--shadow-float)'
+          }}>
             {/* Stand Header */}
-            <div className="relative z-10 space-y-2 mb-5 sm:mb-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.1] text-[11px] sm:text-xs font-semibold text-cyan-400 font-mono">
-                <FiShield />
-                <span>QR-Pass • QR Access System</span>
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 100, background: 'var(--canvas-panel)', border: '1px solid var(--hairline)', fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--ink)', marginBottom: 16 }}>
+                <FiShield size={12} /> QR-Pass • QR Access System
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              <h2 style={{ fontFamily: 'var(--font-sans)', fontSize: 24, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.8px', marginBottom: 8 }}>
                 Scan to Check In
               </h2>
-              <p className="text-xs text-zinc-400 max-w-xs mx-auto">
-                Welcome to <span className="text-white font-medium">{deskName}</span>. Please register your visit below.
+              <p style={{ fontSize: 13, color: 'var(--mute)', lineHeight: '18px' }}>
+                Welcome to <span style={{ fontWeight: 600, color: 'var(--ink)' }}>{deskName}</span>.<br/>Please register your visit below.
               </p>
             </div>
 
             {/* The QR Box */}
-            <div className="relative z-10 p-3 sm:p-5 bg-white rounded-2xl shadow-xl mx-auto w-fit border-4 border-cyan-400/20">
+            <div style={{ 
+              background: '#fff', 
+              padding: 20, 
+              borderRadius: 12, 
+              display: 'inline-block',
+              border: '1px solid var(--hairline)',
+              marginBottom: 24
+            }}>
               <QRCodeSVG
                 id="reception-qr-svg"
                 value={checkInUrl}
-                size={220}
-                className="w-48 h-48 sm:w-56 sm:h-56"
+                size={200}
                 level="H"
                 includeMargin={false}
               />
             </div>
 
             {/* Steps Instruction Pill */}
-            <div className="relative z-10 mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-white/[0.08] flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-[10px] sm:text-[11px] font-mono text-zinc-400">
-              <div className="flex items-center gap-1.5">
-                <span className="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-[10px]">1</span>
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: 16, 
+              fontFamily: 'var(--font-mono)', 
+              fontSize: 10, 
+              color: 'var(--mute)',
+              paddingTop: 24,
+              borderTop: '1px solid var(--hairline)',
+              marginBottom: 16
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 16, height: 16, borderRadius: '50%', background: 'var(--ink)', color: 'var(--canvas)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600 }}>1</span>
                 <span>Scan QR</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-4 h-4 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold text-[10px]">2</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 16, height: 16, borderRadius: '50%', background: 'var(--ink)', color: 'var(--canvas)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600 }}>2</span>
                 <span>Enter Info</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[10px]">3</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 16, height: 16, borderRadius: '50%', background: 'var(--ink)', color: 'var(--canvas)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600 }}>3</span>
                 <span>Pass Issued</span>
               </div>
             </div>
 
             {/* Bottom Station ID Tag */}
-            <div className="mt-4 pt-3 border-t border-white/[0.04] text-[10px] font-mono text-zinc-500">
-              Station ID: {qrId} • Contactless Digital Reception
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--mute)', paddingTop: 16, borderTop: '1px solid var(--hairline)' }}>
+              Station ID: {qrId} • Digital Reception
             </div>
           </div>
         </div>

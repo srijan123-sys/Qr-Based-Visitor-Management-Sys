@@ -1,3 +1,7 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  Dashboard.jsx — Vercel Geist Style
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 import React, { useState, useEffect, useMemo } from 'react';
 import API from '../api/axios.js';
 import { toast } from 'react-hot-toast';
@@ -17,7 +21,6 @@ import {
 } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
-// ── Validation Regex ──────────────────────────────────────
 const PHONE_REGEX = /^\d{10}$/;
 
 const Dashboard = ({ user }) => {
@@ -25,24 +28,18 @@ const Dashboard = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('ALL'); // 'ALL' | 'INSIDE' | 'CHECKED_OUT'
+  const [filterStatus, setFilterStatus] = useState('ALL');
   const [showWalkInModal, setShowWalkInModal] = useState(false);
   const [submittingWalkIn, setSubmittingWalkIn] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [walkInPhoneError, setWalkInPhoneError] = useState('');
 
-  // Walk-in form state
   const [walkInForm, setWalkInForm] = useState({
-    name: '',
-    phone: '',
-    purpose: '',
-    hostName: ''
+    name: '', phone: '', purpose: '', hostName: ''
   });
 
-  // ── Face preview modal state ────────────────────────────
   const [facePreview, setFacePreview] = useState(null);
 
-  // Live clock tick
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
@@ -73,18 +70,16 @@ const Dashboard = ({ user }) => {
       } else {
         await API.put(`/visitors/checkout/${id}`);
       }
-      toast.success(`${visitorName || 'Visitor'} checked out successfully`);
+      toast.success(`${visitorName || 'Visitor'} checked out`);
       fetchVisitors();
     } catch (error) {
       toast.error('Failed to checkout visitor');
     }
   };
 
-  // ── Walk-in phone handler (10 digits only) ──────────────
   const handleWalkInPhoneChange = (value) => {
     const digitsOnly = value.replace(/\D/g, '').slice(0, 10);
     setWalkInForm(prev => ({ ...prev, phone: digitsOnly }));
-    
     if (digitsOnly.length > 0 && digitsOnly.length !== 10) {
       setWalkInPhoneError(`${digitsOnly.length}/10 digits`);
     } else {
@@ -94,13 +89,10 @@ const Dashboard = ({ user }) => {
 
   const handleWalkInSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validate phone before submitting
     if (!PHONE_REGEX.test(walkInForm.phone)) {
-      toast.error('Phone number must be exactly 10 numeric digits');
+      toast.error('Phone number must be exactly 10 digits');
       return;
     }
-
     setSubmittingWalkIn(true);
     try {
       await API.post('/visitors/checkin', {
@@ -113,129 +105,96 @@ const Dashboard = ({ user }) => {
       setShowWalkInModal(false);
       fetchVisitors();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to check in walk-in visitor');
+      toast.error(error.response?.data?.message || 'Failed to check in');
     } finally {
       setSubmittingWalkIn(false);
     }
   };
 
   const exportCSV = () => {
-    if (visitors.length === 0) {
-      toast.error('No visitor logs to export');
-      return;
-    }
-    const headers = ['Name', 'Phone', 'Email', 'Host', 'Purpose', 'Status', 'CheckOutMethod', 'CheckInTime', 'CheckOutTime', 'HasFaceImage'];
+    if (visitors.length === 0) return toast.error('No logs to export');
+    const headers = ['Name', 'Phone', 'Email', 'Host', 'Purpose', 'Status', 'CheckOutMethod', 'CheckInTime', 'CheckOutTime'];
     const rows = visitors.map(v => [
-      `"${v.name}"`,
-      `"${v.phone}"`,
-      `"${v.email || ''}"`,
-      `"${v.hostName}"`,
-      `"${v.purpose}"`,
-      `"${v.status}"`,
-      `"${v.checkOutMethod || 'N/A'}"`,
+      `"${v.name}"`, `"${v.phone}"`, `"${v.email || ''}"`, `"${v.hostName}"`,
+      `"${v.purpose}"`, `"${v.status}"`, `"${v.checkOutMethod || 'N/A'}"`,
       `"${new Date(v.checkInTime).toLocaleString()}"`,
-      `"${v.checkOutTime ? new Date(v.checkOutTime).toLocaleString() : 'N/A'}"`,
-      `"${v.faceImage ? 'Yes' : 'No'}"`
+      `"${v.checkOutTime ? new Date(v.checkOutTime).toLocaleString() : 'N/A'}"`
     ]);
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `visitor_log_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `visitor_log_${new Date().toISOString().slice(0,10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success('Visitor log exported as CSV');
+    toast.success('Visitor log exported');
   };
 
-  // Metrics
   const activeVisitors = visitors.filter(v => v.status === 'Checked In');
   const checkedOutVisitors = visitors.filter(v => v.status === 'Checked Out');
-  const totalToday = visitors.filter(v => 
-    new Date(v.checkInTime).toDateString() === new Date().toDateString()
-  );
+  const totalToday = visitors.filter(v => new Date(v.checkInTime).toDateString() === new Date().toDateString());
 
-  // Filtered list
   const filteredVisitors = useMemo(() => {
     return visitors.filter(v => {
-      const matchesSearch = 
-        v.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        v.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        v.hostName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        v.purpose?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        v.email?.toLowerCase().includes(searchTerm.toLowerCase());
-
-      if (!matchesSearch) return false;
-
+      const match = (v.name + v.phone + v.hostName + v.purpose).toLowerCase().includes(searchTerm.toLowerCase());
+      if (!match) return false;
       if (filterStatus === 'INSIDE') return v.status === 'Checked In';
       if (filterStatus === 'CHECKED_OUT') return v.status === 'Checked Out';
       return true;
     });
   }, [visitors, searchTerm, filterStatus]);
 
-  // ── Checkout method badge helper ────────────────────────
   const getCheckoutMethodBadge = (method) => {
-    switch(method) {
-      case 'auto':
-        return <span className="text-[9px] px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 border border-orange-500/20 font-mono">AUTO 5PM</span>;
-      case 'self':
-        return <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 border border-blue-500/20 font-mono">SELF</span>;
-      default:
-        return null;
-    }
+    if (method === 'auto') return <span className="badge badge-zinc" style={{ fontSize: 9 }}>AUTO 5PM</span>;
+    if (method === 'self') return <span className="badge badge-zinc" style={{ fontSize: 9 }}>SELF</span>;
+    return null;
   };
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <div className="w-12 h-12 rounded-full border-2 border-cyan-500/20 border-t-cyan-500 animate-spin"></div>
-        <p className="font-mono text-sm text-zinc-400">Loading QR Management System logs...</p>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: 16 }}>
+        <div className="spinner" style={{ width: 32, height: 32, borderWidth: 3 }} />
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--mute)' }}>Loading logs...</p>
       </div>
     );
   }
 
-  // ── Personal Dashboard Screen for basic users ───────────────────
+  // Basic User view
   if (user?.role === 'user') {
     return (
-      <div className="space-y-6 animate-fade-in max-w-4xl mx-auto pb-12 pt-4">
-        <div className="border-b border-white/[0.06] pb-4">
-          <h1 className="text-2xl font-bold text-white tracking-tight">My Active Passes</h1>
-          <p className="text-sm text-zinc-400 mt-1">View your check-ins and independently check out.</p>
+      <div className="animate-fade-in" style={{ maxWidth: 860, margin: '0 auto', paddingBottom: 64 }}>
+        <div style={{ borderBottom: '1px solid var(--hairline)', paddingBottom: 16, marginBottom: 24 }}>
+          <h1 style={{ fontSize: 24, fontWeight: 600, color: 'var(--ink)' }}>My Active Passes</h1>
+          <p style={{ fontSize: 13, color: 'var(--mute)' }}>View your check-ins and independently check out.</p>
         </div>
-
         {visitors.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-12 text-center bg-white/[0.02] border border-white/[0.05] rounded-2xl">
-            <FiShield className="text-4xl text-zinc-600 mb-3" />
-            <p className="text-zinc-400">You have no active or past visits.</p>
+          <div className="card-flat" style={{ textAlign: 'center', padding: 48 }}>
+            <FiShield size={32} color="var(--mute)" style={{ margin: '0 auto 12px' }} />
+            <p style={{ color: 'var(--mute)', fontSize: 13 }}>You have no active or past visits.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
             {visitors.map(v => (
-              <div key={v._id} className="bg-[#13131F]/80 backdrop-blur-xl border border-white/[0.08] p-5 rounded-2xl shadow-xl flex flex-col justify-between">
+              <div key={v._id} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
-                  <div className="flex justify-between items-start mb-4">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
                     <div>
-                      <h3 className="font-semibold text-white text-lg">{v.hostName}</h3>
-                      <p className="text-xs font-mono text-zinc-400 mt-0.5">{v.purpose}</p>
+                      <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)' }}>{v.hostName}</h3>
+                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--mute)' }}>{v.purpose}</p>
                     </div>
-                    {v.status === 'Checked In' ? (
-                      <span className="text-[10px] font-mono px-2 py-1 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">ACTIVE</span>
-                    ) : (
-                      <span className="text-[10px] font-mono px-2 py-1 rounded bg-zinc-500/15 text-zinc-400 border border-zinc-500/20">COMPLETED</span>
-                    )}
+                    {v.status === 'Checked In' 
+                      ? <span className="badge badge-blue">ACTIVE</span>
+                      : <span className="badge badge-zinc">COMPLETED</span>
+                    }
                   </div>
-                  
-                  <div className="text-xs space-y-1.5 text-zinc-400 mb-6">
-                    <p><span className="text-zinc-500">In:</span> {new Date(v.checkInTime).toLocaleString()}</p>
-                    {v.checkOutTime && <p><span className="text-zinc-500">Out:</span> {new Date(v.checkOutTime).toLocaleString()} {getCheckoutMethodBadge(v.checkOutMethod)}</p>}
+                  <div style={{ fontSize: 12, color: 'var(--mute)', lineHeight: '20px', marginBottom: 24 }}>
+                    <p>In: {new Date(v.checkInTime).toLocaleString()}</p>
+                    {v.checkOutTime && <p>Out: {new Date(v.checkOutTime).toLocaleString()} {getCheckoutMethodBadge(v.checkOutMethod)}</p>}
                   </div>
                 </div>
-
                 {v.status === 'Checked In' && (
-                  <button
-                    onClick={() => handleCheckOut(v._id, v.name)}
-                    className="w-full py-2.5 rounded-xl bg-orange-500/10 text-orange-400 font-semibold text-sm hover:bg-orange-500/20 hover:text-orange-300 transition-colors border border-orange-500/20"
-                  >
+                  <button onClick={() => handleCheckOut(v._id, v.name)} className="btn-secondary" style={{ width: '100%', justifyContent: 'center' }}>
                     Check Out Now
                   </button>
                 )}
@@ -247,590 +206,259 @@ const Dashboard = ({ user }) => {
     );
   }
 
+  // Admin / Receptionist View
   return (
-    <div className="space-y-8 animate-fade-in max-w-7xl mx-auto pb-12">
-      {/* Top Banner & Quick Controls */}
-      <div className="flex flex-col gap-4 pb-2 border-b border-white/[0.06]">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <div>
-            <div className="flex items-center gap-2.5 mb-1">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight">
-                Live Visitor Log
-              </h1>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/25 shrink-0">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                LIVE
-              </span>
-            </div>
-            <p className="text-xs sm:text-sm text-zinc-400">
-              Real-time front-desk access control & digital security log.
-            </p>
+    <div className="animate-fade-in" style={{ maxWidth: 1200, margin: '0 auto', paddingBottom: 64 }}>
+      {/* Top Banner */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', justifyContent: 'space-between', paddingBottom: 20, borderBottom: '1px solid var(--hairline)', marginBottom: 24 }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+            <h1 style={{ fontFamily: 'var(--font-sans)', fontSize: 28, fontWeight: 600, letterSpacing: '-1px', color: 'var(--ink)' }}>
+              Live Visitor Log
+            </h1>
+            <span className="badge badge-blue" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0070f3' }} className="pulse"></span> LIVE
+            </span>
           </div>
-
-          <div className="flex items-center gap-2 self-start sm:self-auto px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] font-mono text-xs text-zinc-300">
-            <FiClock className="text-cyan-400" />
-            <span>{currentTime.toLocaleTimeString()}</span>
-          </div>
+          <p style={{ fontSize: 13, color: 'var(--mute)' }}>Real-time front-desk access control & digital security log.</p>
         </div>
-
-        {/* Action Buttons Toolbar */}
-        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3">
-          <button
-            onClick={() => setShowWalkInModal(true)}
-            className="btn-primary col-span-2 sm:col-auto shadow-lg shadow-orange-500/25 justify-center text-xs sm:text-sm py-2.5"
-          >
-            <FiUserPlus />
-            <span>+ Walk-in Check-In</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, background: 'var(--canvas-panel)', border: '1px solid var(--hairline)', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--mute)' }}>
+            <FiClock /> {currentTime.toLocaleTimeString()}
+          </div>
+          <button onClick={() => setShowWalkInModal(true)} className="btn-primary" style={{ height: 32 }}>
+            <FiUserPlus /> Walk-in
           </button>
-
-          <button
-            onClick={exportCSV}
-            className="btn-secondary justify-center text-xs sm:text-sm py-2.5"
-          >
-            <FiDownload />
-            <span>Export CSV</span>
+          <button onClick={exportCSV} className="btn-secondary" style={{ height: 32 }}>
+            <FiDownload /> Export
           </button>
-
-          <button
-            onClick={fetchVisitors}
-            disabled={refreshing}
-            className="btn-secondary justify-center text-xs sm:text-sm py-2.5"
-            title="Refresh logs"
-          >
-            <FiRefreshCw className={`${refreshing ? 'animate-spin text-cyan-400' : ''}`} />
-            <span>Refresh</span>
+          <button onClick={fetchVisitors} disabled={refreshing} className="btn-secondary" style={{ height: 32, padding: '0 10px' }} title="Refresh logs">
+            <FiRefreshCw className={refreshing ? 'spinner' : ''} />
           </button>
         </div>
       </div>
 
-      {/* KPI Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
-        {/* Active In Building */}
-        <div className="card card-glow-cyan border-l-4 border-l-cyan-500 p-4 sm:p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">
-                Currently In Building
-              </p>
-              <h3 className="text-3xl sm:text-4xl font-extrabold text-white font-mono tracking-tight">
-                {activeVisitors.length}
-              </h3>
-              <p className="text-xs text-cyan-400 mt-1.5 flex items-center gap-1.5 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
-                Active on premises
-              </p>
-            </div>
-            <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-              <FiClock className="text-xl sm:text-2xl" />
-            </div>
-          </div>
+      {/* Stats Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16, marginBottom: 24 }}>
+        <div className="card" style={{ padding: 20, borderTop: '2px solid var(--link)' }}>
+          <p className="text-eyebrow" style={{ marginBottom: 4 }}>Currently In Building</p>
+          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 32, fontWeight: 700, color: 'var(--ink)', margin: '8px 0' }}>{activeVisitors.length}</h3>
+          <p style={{ fontSize: 12, color: 'var(--mute)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--link)' }}></span> Active on premises
+          </p>
         </div>
-
-        {/* Total Today */}
-        <div className="card card-glow-orange border-l-4 border-l-orange-500 p-4 sm:p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">
-                Total Visitors Today
-              </p>
-              <h3 className="text-3xl sm:text-4xl font-extrabold text-white font-mono tracking-tight">
-                {totalToday.length}
-              </h3>
-              <p className="text-xs text-orange-400 mt-1.5 font-medium">
-                Registered today
-              </p>
-            </div>
-            <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400">
-              <FiUsers className="text-xl sm:text-2xl" />
-            </div>
-          </div>
+        <div className="card" style={{ padding: 20, borderTop: '2px solid #f5a623' }}>
+          <p className="text-eyebrow" style={{ marginBottom: 4 }}>Total Visitors Today</p>
+          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 32, fontWeight: 700, color: 'var(--ink)', margin: '8px 0' }}>{totalToday.length}</h3>
+          <p style={{ fontSize: 12, color: 'var(--mute)' }}>Registered today</p>
         </div>
-
-        {/* Checked Out */}
-        <div className="card border-l-4 border-l-emerald-500 p-4 sm:p-5 sm:col-span-2 lg:col-span-1">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">
-                Checked Out Today
-              </p>
-              <h3 className="text-3xl sm:text-4xl font-extrabold text-white font-mono tracking-tight">
-                {checkedOutVisitors.length}
-              </h3>
-              <p className="text-xs text-emerald-400 mt-1.5 font-medium">
-                Safely departed
-              </p>
-            </div>
-            <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-              <FiCheckCircle className="text-xl sm:text-2xl" />
-            </div>
-          </div>
+        <div className="card" style={{ padding: 20, borderTop: '2px solid #50e3c2' }}>
+          <p className="text-eyebrow" style={{ marginBottom: 4 }}>Checked Out Today</p>
+          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 32, fontWeight: 700, color: 'var(--ink)', margin: '8px 0' }}>{checkedOutVisitors.length}</h3>
+          <p style={{ fontSize: 12, color: 'var(--mute)' }}>Safely departed</p>
         </div>
       </div>
 
-      {/* Search & Filter Toolbar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        {/* Search Field */}
-        <div className="relative flex-1 max-w-md">
-          <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-base pointer-events-none" />
+      {/* Filters & Search */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div style={{ position: 'relative', flex: 1, minWidth: 260, maxWidth: 400 }}>
+          <FiSearch style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--mute)' }} />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search visitor, phone, host, purpose..."
-            className="input-field !pl-10 !py-2.5 text-xs sm:text-sm"
+            placeholder="Search visitor, phone, host..."
+            className="input-field input-field-icon"
+            style={{ height: 36, fontSize: 13 }}
           />
           {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
-            >
+            <button onClick={() => setSearchTerm('')} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--mute)', cursor: 'pointer' }}>
               <FiX />
             </button>
           )}
         </div>
-
-        {/* Filter Pills — horizontally scrollable on mobile */}
-        <div className="flex items-center gap-1.5 p-1 bg-white/[0.03] border border-white/[0.08] rounded-xl overflow-x-auto select-none shrink-0">
-          <button
-            onClick={() => setFilterStatus('ALL')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap ${
-              filterStatus === 'ALL'
-                ? 'bg-cyan-500 text-white shadow-sm shadow-cyan-500/20'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            All ({visitors.length})
-          </button>
-          <button
-            onClick={() => setFilterStatus('INSIDE')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap ${
-              filterStatus === 'INSIDE'
-                ? 'bg-cyan-500 text-white shadow-sm shadow-cyan-500/20'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            Inside ({activeVisitors.length})
-          </button>
-          <button
-            onClick={() => setFilterStatus('CHECKED_OUT')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap ${
-              filterStatus === 'CHECKED_OUT'
-                ? 'bg-cyan-500 text-white shadow-sm shadow-cyan-500/20'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            Checked Out ({checkedOutVisitors.length})
-          </button>
+        <div style={{ display: 'flex', background: 'var(--canvas-panel)', border: '1px solid var(--hairline)', borderRadius: 6, padding: 2 }}>
+          {['ALL', 'INSIDE', 'CHECKED_OUT'].map(status => (
+            <button
+              key={status}
+              onClick={() => setFilterStatus(status)}
+              style={{
+                padding: '6px 12px',
+                fontSize: 12,
+                fontWeight: 500,
+                background: filterStatus === status ? 'var(--ink)' : 'transparent',
+                color: filterStatus === status ? 'var(--canvas)' : 'var(--mute)',
+                border: 'none',
+                borderRadius: 4,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {status === 'ALL' ? `All (${visitors.length})` : status === 'INSIDE' ? `Inside (${activeVisitors.length})` : `Out (${checkedOutVisitors.length})`}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Main Records Container */}
-      <div className="card !p-0 overflow-hidden border border-white/[0.08] shadow-2xl">
-        <div className="p-4 sm:p-5 border-b border-white/[0.06] flex items-center justify-between bg-white/[0.01]">
+      {/* Main Table */}
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--hairline)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h2 className="text-sm sm:text-base font-bold text-white tracking-tight">Visitor Records</h2>
-            <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">
-              Showing {filteredVisitors.length} of {visitors.length} total entries
-            </p>
+            <h2 style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)' }}>Visitor Records</h2>
+            <p style={{ fontSize: 12, color: 'var(--mute)' }}>Showing {filteredVisitors.length} entries</p>
           </div>
           {user?.role === 'admin' && (
-            <Link
-              to="/create"
-              className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
-            >
-              <span>Desk QR Code</span>
-              <span>&rarr;</span>
+            <Link to="/create" style={{ fontSize: 12, fontWeight: 600, color: 'var(--link)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+              Desk QR Code &rarr;
             </Link>
           )}
         </div>
 
-        {/* ── Desktop Table (hidden on mobile, visible md+) ──────────── */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div style={{ overflowX: 'auto' }}>
+          <table className="data-table" style={{ width: '100%', minWidth: 800 }}>
             <thead>
-              <tr className="bg-white/[0.03] text-zinc-400 text-xs font-mono uppercase tracking-wider border-b border-white/[0.06]">
-                <th className="py-3.5 px-5 font-semibold">Visitor</th>
-                <th className="py-3.5 px-5 font-semibold">Host (To Meet)</th>
-                <th className="py-3.5 px-5 font-semibold">Purpose</th>
-                <th className="py-3.5 px-5 font-semibold">Check-In Time</th>
-                <th className="py-3.5 px-5 font-semibold">Status</th>
-                <th className="py-3.5 px-5 font-semibold text-right">Actions</th>
+              <tr>
+                <th>Visitor</th>
+                <th>Host</th>
+                <th>Purpose</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04] text-sm">
+            <tbody>
               {filteredVisitors.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="py-16 text-center">
-                    <div className="flex flex-col items-center justify-center max-w-md mx-auto space-y-3 px-4">
-                      <div className="w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-zinc-500">
-                        <FiShield className="text-2xl text-cyan-400/50" />
-                      </div>
-                      <h3 className="text-base font-bold text-white">No visitors found</h3>
-                      <p className="text-xs text-zinc-400">
-                        {searchTerm 
-                          ? `No records match "${searchTerm}". Try resetting your search filter.`
-                          : 'No visitor logs yet. Generate your Reception QR Code or register a walk-in visitor to begin.'}
-                      </p>
-                      <div className="flex items-center gap-3 pt-2">
-                        {user?.role === 'admin' && (
-                          <Link to="/create" className="btn-cyan text-xs !py-2">
-                            View Reception QR
-                          </Link>
-                        )}
-                        <button
-                          onClick={() => setShowWalkInModal(true)}
-                          className="btn-secondary text-xs !py-2"
-                        >
-                          + Walk-in Check-In
-                        </button>
-                      </div>
-                    </div>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: 48 }}>
+                    <FiShield size={24} color="var(--mute)" style={{ margin: '0 auto 12px' }} />
+                    <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', marginBottom: 4 }}>No visitors found</p>
+                    <p style={{ fontSize: 13, color: 'var(--mute)' }}>Try adjusting your search or filter.</p>
                   </td>
                 </tr>
               ) : (
-                filteredVisitors.map((visitor) => {
-                  const initials = visitor.name
-                    ? visitor.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
-                    : 'V';
-
-                  return (
-                    <tr 
-                      key={visitor._id} 
-                      className="hover:bg-white/[0.02] transition-colors group"
-                    >
-                      <td className="py-4 px-5">
-                        <div className="flex items-center gap-3">
-                          {/* Face Image or Initials Avatar */}
-                          {visitor.faceImage ? (
-                            <button
-                              onClick={() => setFacePreview(visitor)}
-                              className="w-9 h-9 rounded-xl overflow-hidden border border-cyan-500/30 hover:border-cyan-500/60 transition-colors shrink-0 cursor-pointer relative group/face"
-                              title="View face ID"
-                            >
-                              <img src={visitor.faceImage} alt="Face" className="w-full h-full object-cover" />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/face:opacity-100 transition-opacity flex items-center justify-center">
-                                <FiCamera className="text-white text-xs" />
-                              </div>
-                            </button>
-                          ) : (
-                            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-xs font-mono font-bold text-cyan-400 shrink-0">
-                              {initials}
-                            </div>
-                          )}
-                          <div>
-                            <div className="font-semibold text-white group-hover:text-cyan-400 transition-colors">
-                              {visitor.name}
-                            </div>
-                            <div className="text-zinc-500 text-xs flex items-center gap-1 font-mono">
-                              <FiPhone className="text-[10px]" />
-                              <span>{visitor.phone}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td className="py-4 px-5">
-                        <div className="flex items-center gap-1.5 text-zinc-300 font-medium">
-                          <span className="w-6 h-6 rounded-md bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 text-xs shrink-0">
-                            @
-                          </span>
-                          <span>{visitor.hostName}</span>
-                        </div>
-                      </td>
-
-                      <td className="py-4 px-5">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-white/[0.04] border border-white/[0.06] text-zinc-300">
-                          <FiBriefcase className="text-zinc-500" />
-                          <span>{visitor.purpose}</span>
-                        </span>
-                      </td>
-
-                      <td className="py-4 px-5 font-mono text-xs text-zinc-400">
-                        <div>
-                          {new Date(visitor.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </div>
-                        <div className="text-[11px] text-zinc-500">
-                          {new Date(visitor.checkInTime).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                        </div>
-                      </td>
-
-                      <td className="py-4 px-5">
-                        {visitor.status === 'Checked In' ? (
-                          <span className="badge badge-cyan">
-                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                            Checked In
-                          </span>
-                        ) : (
-                          <div className="flex flex-col gap-1">
-                            <span className="badge badge-zinc">
-                              <FiCheckCircle className="text-emerald-400" />
-                              Checked Out
-                            </span>
-                            {getCheckoutMethodBadge(visitor.checkOutMethod)}
-                          </div>
-                        )}
-                      </td>
-
-                      <td className="py-4 px-5 text-right">
-                        {visitor.status === 'Checked In' ? (
-                          <button
-                            onClick={() => handleCheckOut(visitor._id, visitor.name)}
-                            className="btn-danger text-xs font-semibold shadow-sm shadow-red-500/10 hover:shadow-red-500/25"
-                          >
-                            Check Out
+                filteredVisitors.map(v => (
+                  <tr key={v._id}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        {v.faceImage ? (
+                          <button onClick={() => setFacePreview(v)} style={{ width: 32, height: 32, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--hairline)', cursor: 'pointer', padding: 0 }}>
+                            <img src={v.faceImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           </button>
                         ) : (
-                          <div className="text-zinc-500 text-xs font-mono inline-flex items-center gap-1.5">
-                            <FiCheckCircle className="text-emerald-400" />
-                            <span>Out {new Date(visitor.checkOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--canvas-panel)', border: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, color: 'var(--body)' }}>
+                            {v.name?.charAt(0) || 'V'}
                           </div>
                         )}
-                      </td>
-                    </tr>
-                  );
-                })
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{v.name}</div>
+                          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--mute)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <FiPhone size={10} /> {v.phone}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span style={{ fontSize: 13, color: 'var(--ink)' }}>@{v.hostName}</span>
+                    </td>
+                    <td>
+                      <span className="badge badge-zinc" style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+                        <FiBriefcase size={10} /> {v.purpose}
+                      </span>
+                    </td>
+                    <td>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink)' }}>
+                        {new Date(v.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--mute)' }}>
+                        {new Date(v.checkInTime).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                      </div>
+                    </td>
+                    <td>
+                      {v.status === 'Checked In' ? (
+                        <span className="badge badge-blue">Checked In</span>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
+                          <span className="badge badge-zinc">Checked Out</span>
+                          {getCheckoutMethodBadge(v.checkOutMethod)}
+                        </div>
+                      )}
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      {v.status === 'Checked In' ? (
+                        <button onClick={() => handleCheckOut(v._id, v.name)} className="btn-secondary" style={{ height: 28, fontSize: 11 }}>
+                          Check Out
+                        </button>
+                      ) : (
+                        <div style={{ fontSize: 11, color: 'var(--mute)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+                          <FiCheckCircle /> Out {new Date(v.checkOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>
         </div>
-
-        {/* ── Mobile Visitor Cards (visible on mobile only, < md) ─────── */}
-        <div className="md:hidden divide-y divide-white/[0.06]">
-          {filteredVisitors.length === 0 ? (
-            <div className="py-12 px-4 text-center">
-              <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-zinc-500 mx-auto mb-3">
-                <FiShield className="text-xl text-cyan-400/50" />
-              </div>
-              <h4 className="text-sm font-bold text-white mb-1">No visitors found</h4>
-              <p className="text-xs text-zinc-400 mb-4">
-                {searchTerm ? 'Try adjusting your search query.' : 'No visitors recorded yet.'}
-              </p>
-              <button
-                onClick={() => setShowWalkInModal(true)}
-                className="btn-primary text-xs !py-2 w-full justify-center"
-              >
-                + Walk-in Check-In
-              </button>
-            </div>
-          ) : (
-            filteredVisitors.map((visitor) => {
-              const initials = visitor.name
-                ? visitor.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
-                : 'V';
-
-              return (
-                <div key={visitor._id} className="p-4 space-y-3">
-                  {/* Top Row: Avatar + Name + Status */}
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-3">
-                      {/* Face Image or Initials */}
-                      {visitor.faceImage ? (
-                        <button
-                          onClick={() => setFacePreview(visitor)}
-                          className="w-10 h-10 rounded-xl overflow-hidden border border-cyan-500/30 shrink-0 cursor-pointer"
-                        >
-                          <img src={visitor.faceImage} alt="Face" className="w-full h-full object-cover" />
-                        </button>
-                      ) : (
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-xs font-mono font-bold text-cyan-400 shrink-0">
-                          {initials}
-                        </div>
-                      )}
-                      <div>
-                        <h4 className="font-bold text-white text-sm leading-snug">{visitor.name}</h4>
-                        <a
-                          href={`tel:${visitor.phone}`}
-                          className="text-zinc-400 hover:text-cyan-300 text-xs flex items-center gap-1 font-mono mt-0.5"
-                        >
-                          <FiPhone className="text-[10px]" />
-                          <span>{visitor.phone}</span>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col items-end gap-1">
-                      {visitor.status === 'Checked In' ? (
-                        <span className="badge badge-cyan text-[11px] shrink-0">
-                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                          Active
-                        </span>
-                      ) : (
-                        <span className="badge badge-zinc text-[11px] shrink-0">
-                          <FiCheckCircle className="text-emerald-400" />
-                          Out
-                        </span>
-                      )}
-                      {visitor.status === 'Checked Out' && getCheckoutMethodBadge(visitor.checkOutMethod)}
-                    </div>
-                  </div>
-
-                  {/* Details Pill Row */}
-                  <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                    <span className="px-2 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-zinc-300">
-                      Host: <strong className="text-white">@{visitor.hostName}</strong>
-                    </span>
-                    <span className="px-2 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-zinc-300 flex items-center gap-1">
-                      <FiBriefcase className="text-zinc-500 text-[10px]" />
-                      <span>{visitor.purpose}</span>
-                    </span>
-                    <span className="text-zinc-500 font-mono text-[11px] ml-auto">
-                      {new Date(visitor.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-
-                  {/* Action Button */}
-                  {visitor.status === 'Checked In' && (
-                    <button
-                      onClick={() => handleCheckOut(visitor._id, visitor.name)}
-                      className="btn-danger w-full !py-2.5 text-xs font-semibold justify-center shadow-sm"
-                    >
-                      Check Out Visitor
-                    </button>
-                  )}
-                </div>
-              );
-            })
-          )}
-        </div>
       </div>
 
-      {/* ── Face Preview Modal ─────────────────────────────── */}
+      {/* Face Preview Modal */}
       {facePreview && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in"
-          onClick={() => setFacePreview(null)}
-        >
-          <div 
-            className="card max-w-sm w-full border border-white/[0.12] shadow-2xl p-6 text-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setFacePreview(null)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-white/[0.08]"
-            >
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--overlay)' }} onClick={() => setFacePreview(null)}>
+          <div className="card" style={{ width: 320, padding: 24, textAlign: 'center', position: 'relative' }} onClick={e => e.stopPropagation()}>
+            <button onClick={() => setFacePreview(null)} style={{ position: 'absolute', top: 12, right: 12, background: 'none', border: 'none', color: 'var(--mute)', cursor: 'pointer' }}>
               <FiX size={18} />
             </button>
-
-            <div className="w-32 h-32 rounded-2xl overflow-hidden mx-auto mb-4 border-2 border-cyan-500/30 shadow-lg shadow-cyan-500/10">
-              <img src={facePreview.faceImage} alt="Face ID" className="w-full h-full object-cover" />
+            <div style={{ width: 120, height: 120, borderRadius: 12, overflow: 'hidden', margin: '0 auto 16px', border: '1px solid var(--hairline)' }}>
+              <img src={facePreview.faceImage} alt="Face ID" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
-
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-mono text-cyan-400 mb-2">
-              <FiCamera className="text-[9px]" /> FACE ID CAPTURE
-            </div>
-
-            <h3 className="text-lg font-bold text-white">{facePreview.name}</h3>
-            <p className="text-xs text-zinc-400 font-mono mt-1">
-              Phone: {facePreview.phone} • Host: @{facePreview.hostName}
-            </p>
-            <p className="text-xs text-zinc-500 mt-1">
-              Checked in: {new Date(facePreview.checkInTime).toLocaleString()}
-            </p>
+            <span className="text-eyebrow" style={{ display: 'block', marginBottom: 8 }}>FACE ID CAPTURE</span>
+            <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--ink)', marginBottom: 4 }}>{facePreview.name}</h3>
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--mute)', marginBottom: 4 }}>Phone: {facePreview.phone} • Host: @{facePreview.hostName}</p>
+            <p style={{ fontSize: 12, color: 'var(--mute)' }}>Checked in: {new Date(facePreview.checkInTime).toLocaleString()}</p>
           </div>
         </div>
       )}
 
       {/* Walk-in Modal */}
       {showWalkInModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md animate-fade-in">
-          <div className="card w-full max-w-lg max-h-[92vh] overflow-y-auto border border-white/[0.12] shadow-2xl relative p-5 sm:p-6">
-            <button
-              onClick={() => { setShowWalkInModal(false); setWalkInPhoneError(''); }}
-              className="absolute top-5 right-5 text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-white/[0.08]"
-            >
-              <FiX size={20} />
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--overlay)', padding: 16 }}>
+          <div className="card animate-fade-in" style={{ width: '100%', maxWidth: 480, maxHeight: '90vh', overflowY: 'auto', position: 'relative', padding: 32 }}>
+            <button onClick={() => setShowWalkInModal(false)} style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', color: 'var(--mute)', cursor: 'pointer' }}>
+              <FiX size={18} />
             </button>
-
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400">
-                <FiUserPlus size={20} />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">Manual Walk-in Check-In</h3>
-                <p className="text-xs text-zinc-400">Register a guest directly at the reception desk</p>
-              </div>
+            
+            <div style={{ marginBottom: 24 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--ink)' }}>Manual Walk-in</h2>
+              <p style={{ fontSize: 13, color: 'var(--mute)' }}>Register a guest directly at the reception desk</p>
             </div>
 
-            <form onSubmit={handleWalkInSubmit} className="space-y-4">
+            <form onSubmit={handleWalkInSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                  Visitor Full Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={walkInForm.name}
-                  onChange={(e) => setWalkInForm({ ...walkInForm, name: e.target.value })}
-                  placeholder="e.g. Alex Mercer"
-                  className="input-field text-sm"
-                />
+                <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)', marginBottom: 6 }}>Full Name *</label>
+                <input type="text" required value={walkInForm.name} onChange={e => setWalkInForm({ ...walkInForm, name: e.target.value })} placeholder="Alex Mercer" className="input-field" />
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)', marginBottom: 6 }}>Phone Number *</label>
+                <input type="tel" required value={walkInForm.phone} onChange={e => handleWalkInPhoneChange(e.target.value)} placeholder="9876543210" maxLength={10} className="input-field" style={{ fontFamily: 'var(--font-mono)' }} />
+                {walkInPhoneError && <p style={{ fontSize: 11, color: '#e00', marginTop: 4 }}>{walkInPhoneError}</p>}
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                  Phone Number *
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={walkInForm.phone}
-                  onChange={(e) => handleWalkInPhoneChange(e.target.value)}
-                  placeholder="e.g. 9876543210"
-                  maxLength={10}
-                  inputMode="numeric"
-                  pattern="\d{10}"
-                  className={`input-field text-sm font-mono ${
-                    walkInPhoneError ? '!border-red-500/50' : ''
-                  }`}
-                />
-                {walkInPhoneError && (
-                  <p className="text-[11px] text-orange-400 mt-1 font-mono">{walkInPhoneError}</p>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                    Whom to Meet (Host) *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={walkInForm.hostName}
-                    onChange={(e) => setWalkInForm({ ...walkInForm, hostName: e.target.value })}
-                    placeholder="e.g. Sarah Connor"
-                    className="input-field text-sm"
-                  />
+                  <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)', marginBottom: 6 }}>Host *</label>
+                  <input type="text" required value={walkInForm.hostName} onChange={e => setWalkInForm({ ...walkInForm, hostName: e.target.value })} placeholder="Sarah Connor" className="input-field" />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                    Purpose of Visit *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={walkInForm.purpose}
-                    onChange={(e) => setWalkInForm({ ...walkInForm, purpose: e.target.value })}
-                    placeholder="e.g. Meeting, Interview"
-                    className="input-field text-sm"
-                  />
+                  <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)', marginBottom: 6 }}>Purpose *</label>
+                  <input type="text" required value={walkInForm.purpose} onChange={e => setWalkInForm({ ...walkInForm, purpose: e.target.value })} placeholder="Meeting" className="input-field" />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/[0.08]">
-                <button
-                  type="button"
-                  onClick={() => { setShowWalkInModal(false); setWalkInPhoneError(''); }}
-                  className="btn-secondary text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submittingWalkIn}
-                  className="btn-primary text-sm shadow-lg shadow-orange-500/25"
-                >
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--hairline)' }}>
+                <button type="button" onClick={() => setShowWalkInModal(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" disabled={submittingWalkIn} className="btn-primary">
                   {submittingWalkIn ? 'Registering...' : 'Complete Check-In'}
                 </button>
               </div>
