@@ -162,7 +162,7 @@ const Dashboard = ({ user }) => {
       setEditingVisitor(null);
       fetchVisitors();
     } catch (err) {
-      toast.error('Failed to update visitor');
+      toast.error(err.response?.data?.message || 'Failed to update visitor');
     }
   };
 

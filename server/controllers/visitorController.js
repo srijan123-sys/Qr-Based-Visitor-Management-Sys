@@ -252,11 +252,11 @@ const editVisitor = async (req, res) => {
     }
     
     // Update fields
-    if (name) visitor.name = name.trim();
-    if (phone) visitor.phone = phone;
-    if (email) visitor.email = email.trim().toLowerCase();
-    if (purpose) visitor.purpose = purpose;
-    if (hostName) visitor.hostName = hostName.trim();
+    if (name !== undefined) visitor.name = name.trim();
+    if (phone !== undefined) visitor.phone = phone;
+    if (email !== undefined) visitor.email = email.trim().toLowerCase();
+    if (purpose !== undefined) visitor.purpose = purpose;
+    if (hostName !== undefined) visitor.hostName = hostName.trim();
     
     const updatedVisitor = await visitor.save();
     logger.custom('VISITOR', `Edited Visitor Record: ${updatedVisitor.name}`, '\x1b[33m');
@@ -264,6 +264,13 @@ const editVisitor = async (req, res) => {
     res.json({ success: true, data: updatedVisitor, message: 'Visitor record updated' });
   } catch (error) {
     logger.error('Error updating visitor:', error);
+    
+    // Handle Mongoose validation errors
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(e => e.message);
+      return res.status(400).json({ success: false, message: messages.join('. ') });
+    }
+    
     res.status(500).json({ message: 'Server error during update' });
   }
 };
