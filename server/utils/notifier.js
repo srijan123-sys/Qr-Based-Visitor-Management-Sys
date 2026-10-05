@@ -87,6 +87,8 @@ const sendCheckOutNotification = async (visitor) => {
 };
 
 module.exports = {
+  transporter, // Export transporter for diagnostics
+  twilioClient, // Export twilioClient for diagnostics
   sendCheckInNotification,
   sendCheckOutNotification
 };

@@ -4,12 +4,14 @@
 
 const express = require('express');
 const router = express.Router();
-const { registerVisitor, getVisitors, getMyVisitors, checkOutVisitor, selfCheckOut, deleteVisitor, editVisitor } = require('../controllers/visitorController');
+const { registerVisitor, getVisitors, getMyVisitors, checkOutVisitor, selfCheckOut, deleteVisitor, editVisitor, testConfig } = require('../controllers/visitorController');
 const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 
 // Public routes (visitors scanning QR code — no auth needed)
 router.post('/checkin', registerVisitor);
 router.put('/checkout-self/:id', selfCheckOut);     // Visitor self-checkout
+
+router.get('/test-config', testConfig); // Diagnostic test route
 
 // Protected routes for the Admin/Receptionist Dashboard
 router.get('/', protect, authorizeRoles('admin', 'receptionist'), getVisitors);

@@ -5,7 +5,7 @@
 const Visitor = require('../models/Visitor');
 const cloudinary = require('../config/cloudinary');
 const logger = require('../utils/logger');
-const { sendCheckInNotification, sendCheckOutNotification } = require('../utils/notifier');
+const { transporter, twilioClient, sendCheckInNotification, sendCheckOutNotification } = require('../utils/notifier');
 
 // ── Validation Helpers (Regex-based as sir suggested) ─────────
 const PHONE_REGEX = /^\d{10}$/;
@@ -275,6 +275,44 @@ const editVisitor = async (req, res) => {
   }
 };
 
+// @desc    Test Email and WhatsApp configuration
+// @route   GET /api/visitors/test-config
+// @access  Public (for debugging)
+const testConfig = async (req, res) => {
+  let emailStatus = 'Not Configured';
+  let emailError = null;
+  let whatsappStatus = 'Not Configured';
+
+  // Test Email
+  if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    try {
+      await transporter.verify();
+      emailStatus = 'Success - Connected to Gmail SMTP';
+    } catch (err) {
+      emailStatus = 'Failed';
+      emailError = err.message;
+    }
+  }
+
+  // Test WhatsApp Config Presence
+  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_WHATSAPP_NUMBER) {
+    whatsappStatus = 'Configured (Sandbox keys present)';
+  }
+
+  res.json({
+    email: {
+      status: emailStatus,
+      user: process.env.EMAIL_USER || 'Not Set',
+      passSet: !!process.env.EMAIL_PASS,
+      error: emailError
+    },
+    whatsapp: {
+      status: whatsappStatus,
+      twilioNumber: process.env.TWILIO_WHATSAPP_NUMBER || 'Not Set'
+    }
+  });
+};
+
 module.exports = {
   registerVisitor,
   getVisitors,
@@ -283,5 +321,6 @@ module.exports = {
   selfCheckOut,
   autoCheckOutAll,
   deleteVisitor,
-  editVisitor
+  editVisitor,
+  testConfig
 };
