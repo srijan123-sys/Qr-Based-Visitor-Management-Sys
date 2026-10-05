@@ -101,7 +101,7 @@ const Dashboard = ({ user }) => {
         receptionQrId: 'walk-in-desk'
       });
       toast.success(`Registered ${walkInForm.name} successfully!`);
-      setWalkInForm({ name: '', phone: '', purpose: '', hostName: '' });
+      setWalkInForm({ name: '', phone: '', email: '', purpose: '', hostName: '' });
       setWalkInPhoneError('');
       setShowWalkInModal(false);
       fetchVisitors();
@@ -490,10 +490,16 @@ const Dashboard = ({ user }) => {
                 <input type="text" required value={walkInForm.name} onChange={e => setWalkInForm({ ...walkInForm, name: e.target.value })} placeholder="Alex Mercer" className="input-field" />
               </div>
               
-              <div>
-                <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)', marginBottom: 6 }}>Phone Number *</label>
-                <input type="tel" required value={walkInForm.phone} onChange={e => handleWalkInPhoneChange(e.target.value)} placeholder="9876543210" maxLength={10} className="input-field" style={{ fontFamily: 'var(--font-mono)' }} />
-                {walkInPhoneError && <p style={{ fontSize: 11, color: '#e00', marginTop: 4 }}>{walkInPhoneError}</p>}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)', marginBottom: 6 }}>Phone Number *</label>
+                  <input type="tel" required value={walkInForm.phone} onChange={e => handleWalkInPhoneChange(e.target.value)} placeholder="9876543210" maxLength={10} className="input-field" style={{ fontFamily: 'var(--font-mono)' }} />
+                  {walkInPhoneError && <p style={{ fontSize: 11, color: '#e00', marginTop: 4 }}>{walkInPhoneError}</p>}
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--mute)', marginBottom: 6 }}>Email (Optional)</label>
+                  <input type="email" value={walkInForm.email || ''} onChange={e => setWalkInForm({ ...walkInForm, email: e.target.value })} placeholder="alex@example.com" className="input-field" />
+                </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
